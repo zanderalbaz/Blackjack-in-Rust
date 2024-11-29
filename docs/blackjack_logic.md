@@ -7,7 +7,7 @@
 - **Hit**
 : A hit consists of a player or dealer drawing a new card from the deck.
 - **Stand**
-: A stand consists of a player or dealer indicating that they are no longer allowed to draw a card from the deck.
+: A stand consists of a player or dealer indicating that they are no longer allowed to hit on their current hand.
 - **Bust**
 : A bust consists of a player or dealer's hand exceeding the value 21.
 - **Aces**
