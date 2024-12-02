@@ -1,6 +1,6 @@
 
 use bevy::prelude::*;
-use crate::game::components::{Background, GameTitle};
+use crate::game::components::{Background, Logo, PressEnterToPlay};
 
 pub fn setup(
     mut commands: Commands, 
@@ -29,7 +29,19 @@ pub fn setup(
                 transform: Transform::from_xyz(0.0, 0.0, 1.0), //this determines the position of the sprite
                 ..default()
             },
-            GameTitle,
+            Logo,
+        ));
+        commands.spawn((
+            SpriteBundle{
+                texture: asset_server.load("press_enter_to_play.png"), //automatically looks in assets folder
+                sprite: Sprite {
+                    custom_size: Some(Vec2::new(400., 50.)),
+                    ..default()
+                },
+                transform: Transform::from_xyz(0.0, -150.0, 2.0), //this determines the position of the sprite
+                ..default()
+            },
+            PressEnterToPlay,
         ));
         println!("Setup function ran");
 

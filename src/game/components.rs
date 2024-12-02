@@ -8,4 +8,7 @@ pub struct Card;
 pub struct Background;
 
 #[derive(Component)]
-pub struct GameTitle;
+pub struct Logo;
+
+#[derive(Component)]
+pub struct PressEnterToPlay;
