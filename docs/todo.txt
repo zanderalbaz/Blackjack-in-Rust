@@ -1,0 +1,49 @@
+TODO:
+
+(800 x 500)
+
+PRIORITY:
+- Setup player, dealer, deck, and card modules
+- Functionality and visuals to go from start->setup->ingame
+
+
+
+GENERAL:
+
+- Setup Player
+	- int ID
+	- string Username
+	- Vector Hands
+	- int Funds
+	- play functions(check, hit, etc)
+
+- Setup Dealer
+	- Vector<Cards[]> Decks
+	- functions (shuffle, hit/stand)
+
+- Setup Deck
+	- Vector<Card> Cards
+	- Shuffable/dealable traits
+
+- Setup Card
+	- string Suite
+	- string Face
+	- int Value
+	- back/front asset
+
+	-setup aces
+
+- Setup Game Logic
+
+- Startup screen
+	- display background and title and space bar prompt
+	- press space to switch us to setup game screen
+
+- Setup screen
+	- display fields
+	- play button that brings us to in game screen
+
+- In Game screen
+	- display fields and views
+
+
