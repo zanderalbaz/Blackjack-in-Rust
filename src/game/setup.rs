@@ -1,6 +1,6 @@
 
 use bevy::prelude::*;
-use crate::game::components::Background;
+use crate::game::components::{Background, GameTitle};
 
 pub fn setup(
     mut commands: Commands, 
@@ -19,6 +19,17 @@ pub fn setup(
                 ..default()
             },
             Background,
+        ));
+        commands.spawn((
+            SpriteBundle{
+                texture: asset_server.load("game_title.png"), //automatically looks in assets folder
+                sprite: Sprite {
+                    ..default()
+                },
+                transform: Transform::from_xyz(0.0, 0.0, 1.0), //this determines the position of the sprite
+                ..default()
+            },
+            GameTitle,
         ));
         println!("Setup function ran");
 
