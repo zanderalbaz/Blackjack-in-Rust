@@ -1,0 +1,10 @@
+resources used:
+
+https://www.youtube.com/watch?v=rahvQGHgDlo
+https://www.youtube.com/watch?v=qbeu0Mw1HLY
+https://bevy-cheatbook.github.io/2d/camera.html
+https://dennissmuda.com/blog/bevy-run-get-started
+https://www.youtube.com/watch?v=bD2rgvtXcq0
+https://www.youtube.com/watch?v=i-Wczghlmxc&t=396s
+https://docs.rs/bevy/latest/bevy/prelude/struct.State.html
+https://www.youtube.com/watch?v=_C28kqin94c
