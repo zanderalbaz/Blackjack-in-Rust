@@ -2,7 +2,7 @@
 use bevy::prelude::*;
 use crate::game::components::{Background, Logo, PressEnterToPlay};
 
-pub fn setup(
+pub fn start_setup(
     mut commands: Commands, 
     asset_server: Res<AssetServer>, 
     mut texture_atlas: ResMut<Assets<TextureAtlasLayout>>)
@@ -46,3 +46,23 @@ pub fn setup(
         println!("Setup function ran");
 
 }
+
+pub fn setupScreen_setup(mut commands: Commands, 
+    asset_server: Res<AssetServer>, 
+    mut texture_atlas: ResMut<Assets<TextureAtlasLayout>>) {
+
+        commands.spawn(Camera2dBundle::default());
+        commands.spawn((
+            SpriteBundle{
+                texture: asset_server.load("background.png"), 
+                sprite: Sprite {
+                    custom_size: Some(Vec2::new(800., 500.)),
+                    ..default()
+                },
+                transform: Transform::from_xyz(0.0, 0.0, 0.0), 
+                ..default()
+            },
+            Background,
+        ));
+
+    }
