@@ -6,9 +6,9 @@ pub mod constants;
 
 use bevy::prelude::*;
 use constants::AppState;
-use plugins::SetupPlugin;
+use plugins::StartupPlugin;
 use setup::{setupScreen_setup, start_setup};
-use systems::start_game;
+use systems::{start_game, setup_screen};
 
 #[derive(SystemSet, Debug, Hash, PartialEq, Eq, Clone)]
 pub struct StartGameSystemSet;
@@ -24,7 +24,8 @@ pub fn run(){
 	.add_systems(Startup, start_setup.in_set(StartGameSystemSet))
 	.add_systems(Update, start_game.in_set(StartGameSystemSet))
 	.add_systems(Update, setupScreen_setup.in_set(SetupGameSystemSet).run_if(in_state(AppState::Setup)))
-	.add_plugins(SetupPlugin)
+	.add_systems(Update, setup_screen.in_set(SetupGameSystemSet).run_if(in_state(AppState::Setup)))
+	.add_plugins(StartupPlugin)
 	.insert_state(AppState::Start)
 	
 	.run();
