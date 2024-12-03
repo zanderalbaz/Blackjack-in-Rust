@@ -23,8 +23,8 @@ pub fn run(){
 	.configure_sets(Startup, StartGameSystemSet.before(SetupGameSystemSet))
 	.add_systems(Startup, start_setup.in_set(StartGameSystemSet))
 	.add_systems(Update, start_game.in_set(StartGameSystemSet))
-	.add_systems(Update, setupScreen_setup.in_set(SetupGameSystemSet).run_if(in_state(AppState::Setup)))
-	.add_systems(Update, setup_screen.in_set(SetupGameSystemSet).run_if(in_state(AppState::Setup)))
+	.add_systems(Update, setupScreen_setup.in_set(SetupGameSystemSet).run_if(in_state(AppState::Setup).and_then(run_once())))
+	.add_systems(Update, setup_screen.in_set(SetupGameSystemSet).run_if(in_state(AppState::Setup).and_then(run_once())))
 	.add_plugins(StartupPlugin)
 	.insert_state(AppState::Start)
 	
