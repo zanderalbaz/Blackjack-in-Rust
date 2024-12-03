@@ -49,9 +49,17 @@ pub fn start_setup(
 
 pub fn setupScreen_setup(mut commands: Commands, 
     asset_server: Res<AssetServer>, 
-    mut texture_atlas: ResMut<Assets<TextureAtlasLayout>>) {
+    mut texture_atlas: ResMut<Assets<TextureAtlasLayout>>,
+    query: Query<Entity, With<Logo>>, 
+    query2: Query<Entity, With<PressEnterToPlay>>) {
 
-        commands.spawn(Camera2dBundle::default());
+        for entity in query.iter() {
+            commands.entity(entity).despawn();
+        }
+        for entity in query2.iter() {
+            commands.entity(entity).despawn();
+        }
+
         commands.spawn((
             SpriteBundle{
                 texture: asset_server.load("background.png"), 

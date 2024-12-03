@@ -1,9 +1,10 @@
 use bevy::prelude::*;
 
-#[derive(States)]
-#[derive(Debug, Clone, Copy, Hash, PartialEq, Eq)]
+#[derive(States, Debug, Clone, Copy, Eq, PartialEq, Hash, Default)]
 pub enum AppState {
+    #[default]
     Start,
     Setup,
     InGame,
 }
+

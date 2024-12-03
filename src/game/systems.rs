@@ -10,11 +10,7 @@ pub fn start_game(mut query: Query<&mut Transform, With<PressEnterToPlay>>,
 ){
     if keyboard_input.just_pressed(KeyCode::Enter) {
 
-        eprintln!("Current state: {:?}", state.get());
-
         next_state.set(AppState::Setup);
-
-        eprintln!("Current state: {:?}", state.get());
 
     }
 }
