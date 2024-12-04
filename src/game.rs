@@ -12,11 +12,11 @@ pub mod in_game_systems;
 use bevy::prelude::*;
 use constants::AppState;
 use in_game_systems::inGame_setup;
+use start_game_systems::start_game;
 use plugins::StartupPlugin;
 use setup::{setupScreen_setup, start_setup};
 use player_systems::{spawn_test_player, test_player_balance_change, test_player_hand};
 use dealer_systems::{spawn_test_dealer, test_dealer_decks, test_dealer_hand};
-use systems::{inGame_setup, start_game};
 
 #[derive(SystemSet, Debug, Hash, PartialEq, Eq, Clone)]
 pub struct StartGameSystemSet;
