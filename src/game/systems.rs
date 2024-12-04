@@ -1,6 +1,6 @@
 use bevy::prelude::*;
-use super::{components::PressEnterToPlay, constants::AppState};
-
+use super::{components::{PlayerName, PressEnterToPlay, Balance, Hands, Card, Hand}, constants::AppState};
+use super::bundles::PlayerBundle;
 
 pub fn start_game(mut query: Query<&mut Transform, With<PressEnterToPlay>>,
     keyboard_input: Res<ButtonInput<KeyCode>>,
@@ -12,6 +12,34 @@ pub fn start_game(mut query: Query<&mut Transform, With<PressEnterToPlay>>,
 
         next_state.set(AppState::Setup);
 
+    }
+}
+
+pub fn spawn_test_player(mut commands: Commands){
+    commands.spawn(PlayerBundle{
+        player_name: PlayerName(String::from("test").into()),
+        balance: Balance(100.),
+        hands: Hands(vec![Hand{
+            cards: //This is good for a test, but later we should spawn card components
+            (Card{ 
+                suite: String::from("spade").into(), 
+                face: String::from("2").into(), 
+                value: (3,0) 
+            }, 
+            Card{
+                suite: String::from("spade").into(),
+                face: String::from("3").into(),
+                value: (3,0)
+            })
+        }]),
+    });
+}
+
+pub fn test_player_balance_change(mut query: Query<&mut Balance>){
+    for mut balance in &mut query{
+        println!("Player has balance of {}", balance.0);
+        balance.0 += 1.;
+        println!("Player has updated balance of {}", balance.0);
     }
 }
 
