@@ -4,8 +4,7 @@ TODO:
 
 PRIORITY:
 - Setup player [X], dealer[X], deck[X], and card[X] modules
-- Functionality and visuals to go from start->setup->ingame
-
+- Functionality and visuals to go from start->ingame [X]
 
 
 GENERAL:
@@ -35,15 +34,12 @@ GENERAL:
 
 - Setup Game Logic
 
-- Startup screen
-	- display background and title and space bar prompt
-	- press space to switch us to setup game screen
+- Startup screen X
+	- display background and title and space bar prompt x
+	- press enter to switch us to setup game screen x
 
-- Setup screen
-	- display fields
-	- play button that brings us to in game screen
-
-- In Game screen
-	- display fields and views
+- In Game screen X
+	- display fields and views x
+	- display visuals and buttons x
 
 
