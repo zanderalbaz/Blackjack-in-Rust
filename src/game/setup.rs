@@ -1,6 +1,6 @@
 
 use bevy::prelude::*;
-use crate::game::components::{Background, Logo, PressEnterToPlay};
+use crate::game::components::{Background, Logo, PressEnterToPlay, UserCard1};
 
 pub fn start_setup(
     mut commands: Commands, 
@@ -60,6 +60,19 @@ pub fn setupScreen_setup(mut commands: Commands,
             commands.entity(entity).despawn();
         }
 
+        // commands.spawn((
+        //     SpriteBundle{
+        //         texture: asset_server.load("deck/2_of_clubs.png"), 
+        //         sprite: Sprite {
+        //             custom_size: Some(Vec2::new(100., 135.)),
+        //             ..default()
+        //         },
+        //         transform: Transform::from_xyz(-5.0, 10.0, 0.0), 
+        //         ..default()
+        //     },
+        //     UserCard1,
+        // ));
+
         commands.spawn((
             SpriteBundle{
                 texture: asset_server.load("background.png"), 
@@ -72,5 +85,7 @@ pub fn setupScreen_setup(mut commands: Commands,
             },
             Background,
         ));
+
+       
 
     }

@@ -9,7 +9,6 @@ pub struct Logo;
 #[derive(Component)]
 pub struct PressEnterToPlay;
 
-
 #[derive(Component)]
 pub struct PlayerName(pub String);
 
@@ -20,7 +19,6 @@ pub struct Balance(pub f64);
 pub struct Hand{
     pub cards: (Card, Card)
 }
-
 
 //Need this Hands component in order to create a valid PlayerBundle
 #[derive(Component)]

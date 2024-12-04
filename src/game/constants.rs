@@ -4,7 +4,6 @@ use bevy::prelude::*;
 pub enum AppState {
     #[default]
     Start,
-    Setup,
     InGame,
 }
 
