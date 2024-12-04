@@ -138,7 +138,33 @@ pub fn inGame_setup(mut commands: Commands, assets: Res<AssetServer>) {
         ];
 
         for (position, label, font_size) in button_positions {
-            spawn_button_with_text(parent, &assets, position, label, font_size);
+            parent.spawn(ButtonBundle {
+                style: Style {
+                    width: Val::Px(90.0),
+                    height: Val::Px(50.0),
+                    position_type: PositionType::Absolute,
+                    left: Val::Px(position.x),
+                    top: Val::Px(position.y),
+                    border: UiRect::all(Val::Px(5.0)), 
+                    justify_content: JustifyContent::Center,
+                    align_items: AlignItems::Center,
+                    margin: UiRect { left: Val::Px(10.0), bottom: Val::Px(10.0), ..default() },
+                    ..default()
+                },
+                border_color: BorderColor(Color::BLACK),
+                background_color: BackgroundColor(Color::srgb(0.15, 0.15, 0.15)),
+                ..default()
+            })
+            .with_children(|parent| {
+                parent.spawn(TextBundle::from_section(
+                    label,
+                    TextStyle {
+                        font: assets.load("fonts/FiraSans-SemiBold.ttf"),
+                        font_size,
+                        color: Color::srgb(0.9, 0.9, 0.9),
+                    },
+                ));
+            });
         }
 
         let image_button_positions = vec![
@@ -152,7 +178,7 @@ pub fn inGame_setup(mut commands: Commands, assets: Res<AssetServer>) {
             spawn_image_button(parent, &assets, position, image_path);
         }
 
-        spawn_text(parent, &assets, Vec2::new(125.0, 300.0), "Bet Amount: x", 30.0);
+        spawn_text(parent, &assets, Vec2::new(125.0, 305.0), "Bet Amount: x", 30.0);
         spawn_text(parent, &assets, Vec2::new(15.0, 15.0), "User", 30.0);
         spawn_text(parent, &assets, Vec2::new(150.0, 15.0), "Balance: x", 30.0);
         spawn_text(parent, &assets, Vec2::new(415.0, 15.0), "Dealer", 30.0);
