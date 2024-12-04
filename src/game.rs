@@ -9,13 +9,15 @@ use bevy::prelude::*;
 use constants::AppState;
 use plugins::StartupPlugin;
 use setup::{setupScreen_setup, start_setup};
-use systems::{inGame_setup, spawn_test_player, start_game, test_player_balance_change, test_player_hand, spawn_test_dealer, test_dealer_decks};
+use systems::{inGame_setup, spawn_test_player, start_game, test_player_balance_change, test_player_hand, spawn_test_dealer, test_dealer_decks, test_dealer_hand};
 
 #[derive(SystemSet, Debug, Hash, PartialEq, Eq, Clone)]
 pub struct StartGameSystemSet;
 
 #[derive(SystemSet, Debug, Hash, PartialEq, Eq, Clone)]
 pub struct SetupGameSystemSet;
+
+
 
 
 pub fn run(){
@@ -34,6 +36,7 @@ pub fn run(){
 
 	.add_systems(Startup, spawn_test_dealer)
 	.add_systems(Update, test_dealer_decks.in_set(SetupGameSystemSet).run_if(in_state(AppState::InGame).and_then(run_once())))
+	.add_systems(Update, test_dealer_hand.in_set(SetupGameSystemSet).run_if(in_state(AppState::InGame).and_then(run_once())))
 
 	
 	.add_plugins(StartupPlugin)

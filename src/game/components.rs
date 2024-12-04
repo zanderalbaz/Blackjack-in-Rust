@@ -85,7 +85,8 @@ pub struct PlayerBalance(pub f64);
 
 #[derive(Component)]
 pub struct PlayerHand{
-    pub cards: Vec<Card>
+    pub cards: Vec<Card>,
+    pub bet: u64
 }
 
 
