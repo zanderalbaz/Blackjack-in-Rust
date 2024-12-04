@@ -1,5 +1,7 @@
 pub mod components;
 pub mod systems;
+pub mod player_systems;
+pub mod dealer_systems;
 pub mod plugins;
 pub mod setup;
 pub mod constants;
@@ -9,7 +11,9 @@ use bevy::prelude::*;
 use constants::AppState;
 use plugins::StartupPlugin;
 use setup::{setupScreen_setup, start_setup};
-use systems::{inGame_setup, spawn_test_player, start_game, test_player_balance_change, test_player_hand, spawn_test_dealer, test_dealer_decks, test_dealer_hand};
+use player_systems::{spawn_test_player, test_player_balance_change, test_player_hand};
+use dealer_systems::{spawn_test_dealer, test_dealer_decks, test_dealer_hand};
+use systems::{inGame_setup, start_game};
 
 #[derive(SystemSet, Debug, Hash, PartialEq, Eq, Clone)]
 pub struct StartGameSystemSet;
