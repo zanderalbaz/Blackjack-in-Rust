@@ -268,11 +268,11 @@ pub fn inGame_setup(mut commands: Commands, assets: Res<AssetServer>) {
         
         parent.spawn(ImageBundle {
             style: Style {
-                width: Val::Px(100.0),  // Image size
-                height: Val::Px(135.0),
+                width: Val::Px(150.0), 
+                height: Val::Px(195.0),
                 position_type: PositionType::Absolute,
-                left: Val::Px(100.0),  
-                top: Val::Px(150.0),   
+                left: Val::Px(50.0),  
+                top: Val::Px(100.0),   
                 ..default()
             },
             image: UiImage {
@@ -286,11 +286,11 @@ pub fn inGame_setup(mut commands: Commands, assets: Res<AssetServer>) {
         
         parent.spawn(ImageBundle {
             style: Style {
-                width: Val::Px(100.0),  // Image size
-                height: Val::Px(135.0),
+                width: Val::Px(150.0), 
+                height: Val::Px(195.0),
                 position_type: PositionType::Absolute,
                 left: Val::Px(205.0),  
-                top: Val::Px(150.0),   
+                top: Val::Px(100.0),   
                 ..default()
             },
             image: UiImage {
@@ -319,6 +319,54 @@ pub fn inGame_setup(mut commands: Commands, assets: Res<AssetServer>) {
                 position_type: PositionType::Absolute,
                 left: Val::Px(125.0),  
                 top: Val::Px(300.0),
+                ..default()
+            },
+            ..default()
+        });
+    })
+    .with_children(|parent| {
+        parent.spawn(TextBundle {
+            text: Text {
+                sections: vec![
+                    TextSection {
+                        value: "User".to_string(),
+                        style: TextStyle {
+                            font: assets.load("fonts/FiraSans-SemiBold.ttf"), 
+                            font_size: 30.0,  
+                            color: Color::WHITE,  
+                        },
+                    },
+                ],
+                ..default()
+            },
+            style: Style {
+                position_type: PositionType::Absolute,
+                left: Val::Px(15.0),  
+                top: Val::Px(15.0),
+                ..default()
+            },
+            ..default()
+        });
+    })
+    .with_children(|parent| {
+        parent.spawn(TextBundle {
+            text: Text {
+                sections: vec![
+                    TextSection {
+                        value: "Balance: x".to_string(),
+                        style: TextStyle {
+                            font: assets.load("fonts/FiraSans-SemiBold.ttf"), 
+                            font_size: 30.0,  
+                            color: Color::WHITE,  
+                        },
+                    },
+                ],
+                ..default()
+            },
+            style: Style {
+                position_type: PositionType::Absolute,
+                left: Val::Px(150.0),  
+                top: Val::Px(15.0),
                 ..default()
             },
             ..default()
