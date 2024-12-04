@@ -4,21 +4,22 @@ pub mod plugins;
 pub mod setup;
 pub mod constants;
 pub mod bundles;
+pub mod start_game_systems;
+pub mod in_game_systems;
 
 use bevy::prelude::*;
 use constants::AppState;
+use in_game_systems::inGame_setup;
 use plugins::StartupPlugin;
 use setup::{setupScreen_setup, start_setup};
-use systems::{inGame_setup, spawn_test_player, start_game, test_player_balance_change, test_player_hand, spawn_test_dealer, test_dealer_decks, test_dealer_hand};
+use start_game_systems::start_game;
+use systems::{spawn_test_player, test_player_balance_change, test_player_hand, spawn_test_dealer, test_dealer_decks, test_dealer_hand};
 
 #[derive(SystemSet, Debug, Hash, PartialEq, Eq, Clone)]
 pub struct StartGameSystemSet;
 
 #[derive(SystemSet, Debug, Hash, PartialEq, Eq, Clone)]
 pub struct SetupGameSystemSet;
-
-
-
 
 pub fn run(){
 	//start game here.
