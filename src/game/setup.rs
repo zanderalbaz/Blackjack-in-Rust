@@ -1,6 +1,6 @@
 
 use bevy::prelude::*;
-use crate::game::components::{Background, Logo, PressEnterToPlay, UserCard1};
+use crate::game::components::{Background, Logo, PressEnterToPlay};
 
 pub fn start_setup(
     mut commands: Commands, 
