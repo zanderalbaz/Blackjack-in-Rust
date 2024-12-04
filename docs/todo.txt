@@ -3,7 +3,7 @@ TODO:
 (800 x 500)
 
 PRIORITY:
-- Setup player, dealer, deck, and card modules
+- Setup player [X], dealer[X], deck[X], and card[X] modules
 - Functionality and visuals to go from start->setup->ingame
 
 
@@ -11,7 +11,7 @@ PRIORITY:
 GENERAL:
 
 - Setup Player
-	- int ID
+	- int ID  
 	- string Username
 	- Vector Hands
 	- int Funds

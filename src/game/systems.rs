@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-use super::{components::{PlayerName, PressEnterToPlay, Balance, Hands, Card, Hand}, constants::AppState};
+use super::{components::{PlayerName, PressEnterToPlay, PlayerBalance, PlayerHands, Card, PlayerHand}, constants::AppState};
 use super::bundles::PlayerBundle;
 
 pub fn start_game(mut query: Query<&mut Transform, With<PressEnterToPlay>>,
@@ -210,3 +210,34 @@ pub fn inGame_setup(mut commands: Commands, assets: Res<AssetServer>) {
     });
 }
 
+pub fn spawn_test_player(mut commands: Commands){
+    commands.spawn(PlayerBundle{
+        player_name: PlayerName(String::from("test").into()),
+        player_balance: PlayerBalance(100.),
+        player_hands: PlayerHands(vec![PlayerHand{
+            cards: //This is good for a test, but later we should spawn card components
+            vec![Card{ 
+                suite: String::from("spades").into(), 
+                face: String::from("2").into(), 
+                value: (3,0),
+                front_asset_path: String::from("deck/2_of_spades.png").into(),
+                back_asset_path: String::from("deck/card_back.png").into()
+            }, 
+            Card{
+                suite: String::from("spade").into(),
+                face: String::from("3").into(),
+                value: (3,0),
+                front_asset_path: String::from("deck/3_of_spades.png").into(),
+                back_asset_path: String::from("deck/card_back.png").into()
+            }]
+        }]),
+    });
+}
+
+pub fn test_player_balance_change(mut query: Query<&mut PlayerBalance>){
+    for mut balance in &mut query{
+        println!("Player has balance of {}", balance.0);
+        balance.0 += 1.;
+        println!("Player has updated balance of {}", balance.0);
+    }
+}

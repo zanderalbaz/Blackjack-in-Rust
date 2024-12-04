@@ -9,7 +9,7 @@ use bevy::prelude::*;
 use constants::AppState;
 use plugins::StartupPlugin;
 use setup::{setupScreen_setup, start_setup};
-use systems::{start_game, inGame_setup};
+use systems::{start_game, inGame_setup, spawn_test_player, test_player_balance_change};
 
 #[derive(SystemSet, Debug, Hash, PartialEq, Eq, Clone)]
 pub struct StartGameSystemSet;
@@ -26,8 +26,12 @@ pub fn run(){
 	.add_systems(Update, start_game.in_set(StartGameSystemSet))
 	.add_systems(Update, setupScreen_setup.in_set(SetupGameSystemSet).run_if(in_state(AppState::InGame).and_then(run_once())))
 	.add_systems(Update, inGame_setup.in_set(SetupGameSystemSet).run_if(in_state(AppState::InGame).and_then(run_once())))
-	//.add_systems(Startup, spawn_test_player)
-	//.add_systems(Update, test_player_balance_change)
+
+
+	.add_systems(Startup, spawn_test_player)
+	.add_systems(Update, test_player_balance_change.in_set(SetupGameSystemSet).run_if(in_state(AppState::InGame).and_then(run_once())))
+	
+	
 	.add_plugins(StartupPlugin)
 	.insert_state(AppState::Start)
 	
