@@ -1,6 +1,9 @@
 use bevy::prelude::*;
-use super::{components::{PlayerName, PressEnterToPlay, PlayerBalance, PlayerHands, Card, PlayerHand}, constants::AppState};
+use super::{bundles::DealerBundle, components::{Card, DealerHand, Decks, PlayerBalance, PlayerHand, PlayerHands, PlayerName, PressEnterToPlay}, constants::AppState};
 use super::bundles::PlayerBundle;
+
+//TODO: Refactor this file into multiple files for orginization
+
 
 pub fn start_game(mut query: Query<&mut Transform, With<PressEnterToPlay>>,
     keyboard_input: Res<ButtonInput<KeyCode>>,
@@ -210,6 +213,9 @@ pub fn inGame_setup(mut commands: Commands, assets: Res<AssetServer>) {
     });
 }
 
+
+//TODO: Split the player functions below into a new file (This file is gonna be fucking huge if not lol)
+
 pub fn spawn_test_player(mut commands: Commands){
     commands.spawn(PlayerBundle{
         player_name: PlayerName(String::from("test").into()),
@@ -224,7 +230,7 @@ pub fn spawn_test_player(mut commands: Commands){
                 back_asset_path: String::from("deck/card_back.png").into()
             }, 
             Card{
-                suite: String::from("spade").into(),
+                suite: String::from("spades").into(),
                 face: String::from("3").into(),
                 value: (3,0),
                 front_asset_path: String::from("deck/3_of_spades.png").into(),
@@ -241,3 +247,72 @@ pub fn test_player_balance_change(mut query: Query<&mut PlayerBalance>){
         println!("Player has updated balance of {}", balance.0);
     }
 }
+
+//TODO: Implement system to update the player balance on GUI
+
+
+//TODO: Implement system to update the player username on GUI
+
+
+pub fn hit_player_hand(mut query: Query<&mut PlayerHands>){
+    //TODO: figure out how to select the correct hand
+    for player_hand in &mut query{
+        //add a card to the correct hand
+        //check for hand bust (over 21)
+    }
+}
+
+pub fn stand_player_hand(mut query: Query<&mut PlayerHands>){
+    //TODO: figure out how to select the correct hand
+    
+    //implement some sort of current hand state.
+    //end current hand and move to the next hand (dealer or player's next hand)
+}
+
+
+pub fn test_player_hand(mut query: Query<&mut PlayerHands>){
+    for player_hand in &mut query{
+        let card1 = &player_hand.0[0].cards[0];
+        let card2 = &player_hand.0[0].cards[1];
+        println!("Cards: {} of {}, {} of {}", card1.face, card1.suite, card2.face, card2.suite);
+    }
+}
+
+
+
+//TODO: Split the dealer functions below into a new file
+
+pub fn spawn_test_dealer(mut commands: Commands){
+    commands.spawn(DealerBundle{
+        dealer_decks: Decks::default(),
+        dealer_hand: DealerHand{ 
+            cards: vec![Card{ 
+                suite: String::from("spades").into(), 
+                face: String::from("2").into(), 
+                value: (3,0),
+                front_asset_path: String::from("deck/2_of_spades.png").into(),
+                back_asset_path: String::from("deck/card_back.png").into()
+            }, 
+            Card{
+                suite: String::from("spades").into(),
+                face: String::from("3").into(),
+                value: (3,0),
+                front_asset_path: String::from("deck/3_of_spades.png").into(),
+                back_asset_path: String::from("deck/card_back.png").into()
+            }]
+        },
+    });
+}
+
+pub fn test_dealer_decks(mut query: Query<&mut Decks>){
+    for deck in &mut query{
+        let num_decks = deck.number_of_decks;
+        println!("Number of Decks: {num_decks}");
+        let deck1 = &deck.decks[0];
+        for card in &deck1.cards{
+            println!("Card: {} of {}", card.face, card.suite);
+        }
+    }
+
+}
+

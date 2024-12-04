@@ -9,7 +9,7 @@ use bevy::prelude::*;
 use constants::AppState;
 use plugins::StartupPlugin;
 use setup::{setupScreen_setup, start_setup};
-use systems::{start_game, inGame_setup, spawn_test_player, test_player_balance_change};
+use systems::{inGame_setup, spawn_test_player, start_game, test_player_balance_change, test_player_hand, spawn_test_dealer, test_dealer_decks};
 
 #[derive(SystemSet, Debug, Hash, PartialEq, Eq, Clone)]
 pub struct StartGameSystemSet;
@@ -27,10 +27,14 @@ pub fn run(){
 	.add_systems(Update, setupScreen_setup.in_set(SetupGameSystemSet).run_if(in_state(AppState::InGame).and_then(run_once())))
 	.add_systems(Update, inGame_setup.in_set(SetupGameSystemSet).run_if(in_state(AppState::InGame).and_then(run_once())))
 
-
+	//testing systems
 	.add_systems(Startup, spawn_test_player)
 	.add_systems(Update, test_player_balance_change.in_set(SetupGameSystemSet).run_if(in_state(AppState::InGame).and_then(run_once())))
-	
+	.add_systems(Update, test_player_hand.in_set(SetupGameSystemSet).run_if(in_state(AppState::InGame).and_then(run_once())))
+
+	.add_systems(Startup, spawn_test_dealer)
+	.add_systems(Update, test_dealer_decks.in_set(SetupGameSystemSet).run_if(in_state(AppState::InGame).and_then(run_once())))
+
 	
 	.add_plugins(StartupPlugin)
 	.insert_state(AppState::Start)

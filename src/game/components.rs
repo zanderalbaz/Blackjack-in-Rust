@@ -24,7 +24,7 @@ pub struct Card{
 
 #[derive(Component)]
 pub struct Deck{
-    cards: Vec<Card>
+    pub cards: Vec<Card>
 }
 
 impl Default for Deck {
@@ -66,7 +66,14 @@ impl Default for Deck {
 
 #[derive(Component)]
 pub struct Decks{
-    decks: Vec<Deck>
+    pub number_of_decks: u8,
+    pub decks: Vec<Deck>
+}
+
+impl Default for Decks{
+    fn default() -> Self {
+        Self { number_of_decks: 1, decks: vec![Deck::default()] }
+    }
 }
 
 
