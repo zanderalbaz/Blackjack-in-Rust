@@ -373,3 +373,23 @@ pub fn test_dealer_hand(mut query: Query<&mut DealerHand>){
     }
 }
 
+
+
+
+pub fn hit_dealer_hand(mut query: Query<&mut DealerHand>){
+    for dealer_hand in &mut query{
+        //add a card to dealer hand
+        //check for hand bust (over 21)
+    }
+}
+
+pub fn stand_dealer_hand(mut query: Query<(&mut DealerHand, &mut PlayerHands)>){    
+    //end current hand and calculate win
+
+}
+
+
+pub fn shuffle_dealer_decks(mut query: Query<&mut Decks>){
+    //shuffle dealer hand once out of cards.
+}
+
