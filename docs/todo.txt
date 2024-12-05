@@ -4,7 +4,7 @@ TODO:
 
 PRIORITY:
 
-- update value of bet and balance -- i've spent a long time trying, still stuck but working it out
+- update value of balance 
 
 - when hand is spawned for player, need to somehow connect those image_paths to the image path to InGameCardAccess values PlayerCard1, PlayerCard2, DealerCard1, DealerCard2
 
@@ -14,6 +14,7 @@ PRIORITY:
 
 GENERAL:
 
+- update value of bet [X]
 - Setup player [X], dealer[X], deck[X], and card[X] modules
 - Functionality and visuals to go from start->ingame [X]
 
