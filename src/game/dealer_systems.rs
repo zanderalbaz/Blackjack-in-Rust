@@ -1,6 +1,9 @@
 use bevy::prelude::*;
 use crate::game::components::{Decks, DealerHand, Card, PlayerHands};
 use crate::game::bundles::DealerBundle;
+use crate::game::constants::DeckState;
+
+use super::components::Deck;
 
 pub fn spawn_test_dealer(mut commands: Commands){
     commands.spawn(DealerBundle{
@@ -43,6 +46,29 @@ pub fn test_dealer_hand(mut query: Query<&mut DealerHand>){
     }
 }
 
+pub fn shuffle_dealer_decks(mut query: Query<&mut Decks>,
+    mut state: ResMut<State<DeckState>>,
+    mut next_state: ResMut<NextState<DeckState>>){
+   
+    for mut decks in &mut query{
+        decks.shuffle()
+    }
+    next_state.set(DeckState::Shuffled)
+}
+
+
+// pub fn start_game(mut query: Query<&mut Transform, With<PressEnterToPlay>>,
+//     keyboard_input: Res<ButtonInput<KeyCode>>,
+//     mut state: ResMut<State<AppState>>,
+//     mut next_state: ResMut<NextState<AppState>>,
+
+// ){
+//     if keyboard_input.just_pressed(KeyCode::Enter) {
+
+//         next_state.set(AppState::InGame);
+
+//     }
+// }
 
 
 
@@ -58,8 +84,4 @@ pub fn stand_dealer_hand(mut query: Query<(&mut DealerHand, &mut PlayerHands)>){
 
 }
 
-
-pub fn shuffle_dealer_decks(mut query: Query<&mut Decks>){
-    //shuffle dealer hand once out of cards.
-}
 

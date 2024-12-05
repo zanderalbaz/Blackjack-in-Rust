@@ -9,3 +9,11 @@ pub enum AppState {
     InGame,
 }
 
+#[derive(States, Debug, Clone, Copy, Eq, PartialEq, Hash, Default)]
+pub enum DeckState {
+    #[default]
+    NotShuffled,
+    Shuffling,
+    Shuffled
+}
+
