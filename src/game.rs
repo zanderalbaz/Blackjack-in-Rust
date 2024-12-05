@@ -9,16 +9,18 @@ pub mod bundles;
 pub mod start_game_systems;
 pub mod in_game_systems;
 pub mod traits;
+pub mod resources;
 
 use bevy::prelude::*;
-use constants::AppState;
+use constants::{AppState, DeckState};
 
-use in_game_systems::{ chip_button_click_system, player_button_system, inGame_setup, BalanceValue, BetValue};
+use in_game_systems::{ chip_button_click_system, player_button_system, inGame_setup};
+use resources::{BalanceValue, BetValue};
 use start_game_systems::start_game;
 use plugins::StartupPlugin;
 use setup::{setupScreen_setup, start_setup};
 use player_systems::{hit_player_hand, spawn_test_player, test_player_balance_change, test_player_hand};
-use dealer_systems::{spawn_test_dealer, test_dealer_decks, test_dealer_hand};
+use dealer_systems::{shuffle_dealer_decks, spawn_test_dealer, test_dealer_decks, test_dealer_hand};
 
 #[derive(SystemSet, Debug, Hash, PartialEq, Eq, Clone)]
 pub struct StartGameSystemSet;

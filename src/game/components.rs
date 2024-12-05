@@ -41,7 +41,25 @@ pub enum PlayerButtonValues {
     Stand,
     DoubleDown,
     Home,
+    Deal,
 }
+
+#[derive(Component, Debug, Clone, Copy, PartialEq)]
+pub enum InGameCardAccess {
+    PlayerCard1,
+    PlayerCard2,
+    DealerCard1,
+    DealerCard2,
+}
+
+#[derive(Component, Debug, Clone, Copy, PartialEq)]
+pub enum TextComponents {
+    Balance,
+    Bet,
+    Instruction,
+    NotChanged,
+}
+
 
 
 
