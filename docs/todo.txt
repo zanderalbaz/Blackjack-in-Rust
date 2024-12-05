@@ -4,11 +4,11 @@ TODO:
 
 PRIORITY:
 
-- update value of balance 
-
 - when hand is spawned for player, need to somehow connect those image_paths to the image path to InGameCardAccess values PlayerCard1, PlayerCard2, DealerCard1, DealerCard2
 
 - implement player_system functions 
+
+- update value of balance 
 
 
 
