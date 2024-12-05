@@ -1,6 +1,31 @@
 use bevy::prelude::*;
 use super::{components::{BetAmountText, ChipButtonValue, InGameCardAccess, PlayerBalance, PlayerButtonValues, PlayerHands, TextComponents}, player_systems::{double_down_player_hand, hit_player_hand, stand_player_hand}, resources::{BalanceValue, BetValue}};
 
+pub fn inGame_setup(mut commands: Commands, assets: Res<AssetServer>) {
+    
+    commands.spawn(NodeBundle {
+        style: Style {
+            width: Val::Percent(100.0),
+            height: Val::Percent(100.0),
+            ..default()
+        },
+        ..default()
+    })
+    .with_children(|parent| {
+        
+        spawn_buttons(parent, &assets);
+        
+        spawn_chip_buttons(parent, &assets);
+
+        spawn_text_fields(parent, &assets);
+
+        spawn_cards(parent, &assets);
+    });
+}
+
+//UI component functions below ----------------
+
+//spawning chip buttons dynamically
 fn spawn_image_button(
     parent: &mut ChildBuilder,
     assets: &Res<AssetServer>,
@@ -39,6 +64,7 @@ fn spawn_image_button(
     });
 }
 
+//spawning text elements dynamically
 fn spawn_text(
     parent: &mut ChildBuilder,
     assets: &Res<AssetServer>,
@@ -75,28 +101,7 @@ fn spawn_text(
     entity
 }
 
-pub fn inGame_setup(mut commands: Commands, assets: Res<AssetServer>) {
-    
-    commands.spawn(NodeBundle {
-        style: Style {
-            width: Val::Percent(100.0),
-            height: Val::Percent(100.0),
-            ..default()
-        },
-        ..default()
-    })
-    .with_children(|parent| {
-        
-        spawn_buttons(parent, &assets);
-        
-        spawn_image_buttons(parent, &assets);
-
-        spawn_text_fields(parent, &assets);
-
-        spawn_cards(parent, &assets);
-    });
-}
-
+//spawning player game buttons dynamically
 fn spawn_buttons(parent: &mut ChildBuilder, assets: &Res<AssetServer>) {
     let button_positions = vec![
         (Vec2::new(5.0, 350.0), "Stand", 30.0, PlayerButtonValues::Stand),
@@ -125,13 +130,11 @@ fn spawn_buttons(parent: &mut ChildBuilder, assets: &Res<AssetServer>) {
             ..default()
         };
 
-        
         button_bundle.visibility = match button_value {
             PlayerButtonValues::Deal => Visibility::Visible,
             _ => Visibility::Hidden,
         };
 
-        
         parent.spawn(button_bundle)
             .insert(button_value)
             .with_children(|parent| {
@@ -147,36 +150,18 @@ fn spawn_buttons(parent: &mut ChildBuilder, assets: &Res<AssetServer>) {
     }
 }
 
-
-fn spawn_image_buttons(parent: &mut ChildBuilder, assets: &Res<AssetServer>) {
+//spawning the chip buttons with specific values 
+fn spawn_chip_buttons(parent: &mut ChildBuilder, assets: &Res<AssetServer>) {
     spawn_image_button(parent, &assets, Vec2::new(5.0, 400.0), "chips/1.png", ChipButtonValue::One);
     spawn_image_button(parent, &assets, Vec2::new(105.0, 400.0), "chips/5.png", ChipButtonValue::Five);
     spawn_image_button(parent, &assets, Vec2::new(205.0, 400.0), "chips/10.png", ChipButtonValue::Ten);
     spawn_image_button(parent, &assets, Vec2::new(305.0, 400.0), "chips/50.png", ChipButtonValue::Fifty);
 }
 
+//spawning the text elements with specific values
 fn spawn_text_fields(parent: &mut ChildBuilder, assets: &Res<AssetServer>) {
     spawn_text(parent, &assets, Vec2::new(125.0, 305.0), "Bet Amount:", 30.0, TextComponents::NotChanged);
     spawn_text(parent, &assets, Vec2::new(270.0, 305.0), "x", 30.0, TextComponents::Bet);
-
-
-    /*
-        !! can't get this to work due to borrowing commands one too many times...  !!
-
-        -------------
-
-        let bet_entity = spawn_text(parent, &assets, Vec2::new(270.0, 305.0), "x", 30.0);
-
-    
-        commands.entity(bet_entity).insert(BetAmountText {
-            bet_text: "10".to_string(),
-            balance_text: "100".to_string(),
-        });
-
-        ------------
-     */
-    
-
     spawn_text(parent, &assets, Vec2::new(15.0, 15.0), "User", 30.0, TextComponents::NotChanged);
     spawn_text(parent, &assets, Vec2::new(150.0, 15.0), "Balance:", 30.0, TextComponents::NotChanged);
     spawn_text(parent, &assets, Vec2::new(255.0, 15.0), "x", 30.0, TextComponents::Balance);
@@ -184,6 +169,7 @@ fn spawn_text_fields(parent: &mut ChildBuilder, assets: &Res<AssetServer>) {
     spawn_text(parent, &assets, Vec2::new(40.0, 200.0), "Please place a bet then hit deal", 30.0, TextComponents::Instruction);
 }
 
+//spawning card images
 fn spawn_cards(parent: &mut ChildBuilder, assets: &Res<AssetServer>) {
     let card_positions = vec![
         (Vec2::new(50.0, 100.0), "deck/2_of_clubs.png", InGameCardAccess::PlayerCard1),
@@ -216,6 +202,9 @@ fn spawn_cards(parent: &mut ChildBuilder, assets: &Res<AssetServer>) {
     }
 }
 
+//button click functions below -----------------------
+
+//dealing with chip button clicks
 pub fn chip_button_click_system(
     mut bet_value: ResMut<BetValue>,
     mut interaction_query: Query<(&Button, &mut Interaction, &ChipButtonValue)>,
@@ -237,30 +226,24 @@ pub fn chip_button_click_system(
 
         let new_bet_text = bet_value.value.to_string();
 
-        
         for (text_component, mut text) in text_query.iter_mut() {
             if let TextComponents::Bet = text_component {
                 text.sections[0].value = new_bet_text.clone(); 
             }
         }
     }
-    //println!("Current Bet Value: {}", bet_value.value);
+
 }
 
-
+//dealing with player game button clicks
 pub fn player_button_system(
-    //mut interaction_query: Query<(&Button, &mut Interaction, &PlayerButtonValues, &mut Visibility), With<Button>>,
     mut player_query: Query<(&mut PlayerHands, &mut PlayerBalance)>,
     mut bet_value: ResMut<BetValue>, 
     mut player_balance_result: ResMut<BalanceValue>, 
-    //mut card_query: Query<(&InGameCardAccess, &mut Visibility), Without<Button>>,
-    //mut text_query: Query<(&TextComponents, &mut Visibility), Without<InGameCardAccess>>,
     mut param_set: ParamSet<(
         Query<(&Button, &mut Interaction, &PlayerButtonValues, &mut Visibility), With<Button>>,
         Query<(&InGameCardAccess, &mut Visibility)>,       
         Query<(&TextComponents, &mut Visibility)>        
-        
-         
     )>,  
 ) {
     let mut hit_button_pressed = false;
@@ -268,8 +251,6 @@ pub fn player_button_system(
     let mut double_button_pressed = false;
     let mut deal_button_pressed = false;
     
-
-    //for (_, mut interaction, value, mut visibility) in interaction_query.iter_mut()
     for (_, mut interaction, value, mut visibility) in param_set.p0().iter_mut() {
         match *interaction {
             Interaction::Pressed => {
@@ -312,7 +293,6 @@ pub fn player_button_system(
                 _ => {}
             } 
         }
-
     }
     else if stand_button_pressed {
         stand_player_hand(player_query);
