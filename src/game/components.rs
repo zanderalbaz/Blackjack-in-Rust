@@ -61,8 +61,6 @@ pub enum TextComponents {
 }
 
 
-
-
 // #[derive(Component)]
 // struct CardImageComponent {
 //     image_path: String,

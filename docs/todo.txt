@@ -3,11 +3,19 @@ TODO:
 (800 x 500)
 
 PRIORITY:
-- Setup player [X], dealer[X], deck[X], and card[X] modules
-- Functionality and visuals to go from start->ingame [X]
+
+- update value of bet and balance -- i've spent a long time trying, still stuck but working it out
+
+- when hand is spawned for player, need to somehow connect those image_paths to the image path to InGameCardAccess values PlayerCard1, PlayerCard2, DealerCard1, DealerCard2
+
+- implement player_system functions 
+
 
 
 GENERAL:
+
+- Setup player [X], dealer[X], deck[X], and card[X] modules
+- Functionality and visuals to go from start->ingame [X]
 
 - Setup Player 
 	- int ID  << do not need X
