@@ -8,6 +8,7 @@ pub mod constants;
 pub mod bundles;
 pub mod start_game_systems;
 pub mod in_game_systems;
+pub mod traits;
 
 use bevy::prelude::*;
 use constants::{AppState, DeckState};

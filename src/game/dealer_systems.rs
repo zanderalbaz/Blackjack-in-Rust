@@ -3,7 +3,7 @@ use crate::game::components::{Decks, DealerHand, Card, PlayerHands};
 use crate::game::bundles::DealerBundle;
 use crate::game::constants::DeckState;
 
-use super::components::Deck;
+use super::traits::Shufflable;
 
 pub fn spawn_test_dealer(mut commands: Commands){
     commands.spawn(DealerBundle{
@@ -51,24 +51,10 @@ pub fn shuffle_dealer_decks(mut query: Query<&mut Decks>,
     mut next_state: ResMut<NextState<DeckState>>){
    
     for mut decks in &mut query{
-        decks.shuffle()
+        decks.shuffle();
     }
     next_state.set(DeckState::Shuffled)
 }
-
-
-// pub fn start_game(mut query: Query<&mut Transform, With<PressEnterToPlay>>,
-//     keyboard_input: Res<ButtonInput<KeyCode>>,
-//     mut state: ResMut<State<AppState>>,
-//     mut next_state: ResMut<NextState<AppState>>,
-
-// ){
-//     if keyboard_input.just_pressed(KeyCode::Enter) {
-
-//         next_state.set(AppState::InGame);
-
-//     }
-// }
 
 
 

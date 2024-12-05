@@ -2,6 +2,7 @@ use bevy::prelude::*;
 use rand::Rng;
 
 use super::constants;
+use crate::game::traits::Shufflable;
 
 #[derive(Component)]
 pub struct Background;
@@ -28,8 +29,8 @@ pub struct Deck{
     pub cards: Vec<Card>
 }
 
-impl Deck {
-    pub fn shuffle(&mut self){
+impl Shufflable for Deck {
+    fn shuffle(&mut self){
         for i in 0..self.cards.len(){
             //swap current card with random card
             let card1 = self.cards[i].clone();
@@ -84,8 +85,8 @@ pub struct Decks{
     pub decks: Vec<Deck>
 }
 
-impl Decks {
-    pub fn shuffle(&mut self){
+impl Shufflable for Decks {
+    fn shuffle(&mut self){
         for deck in &mut self.decks{
             deck.shuffle();
         }

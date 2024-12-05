@@ -13,7 +13,6 @@ pub enum AppState {
 pub enum DeckState {
     #[default]
     NotShuffled,
-    Shuffling,
     Shuffled
 }
 
