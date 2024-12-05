@@ -28,10 +28,10 @@ pub fn spawn_test_player(mut commands: Commands){
 }
 
 
+pub fn hit_player_hand(mut query: Query<(&mut PlayerHands, &mut PlayerBalance)>){
 
-
-
-pub fn hit_player_hand(mut query: Query<&mut PlayerHands>){
+    println!("hello from hit");
+    
     //TODO: figure out how to select the correct hand
     for player_hand in &mut query{
         //add a card to the correct hand
@@ -39,7 +39,10 @@ pub fn hit_player_hand(mut query: Query<&mut PlayerHands>){
     }
 }
 
-pub fn stand_player_hand(mut query: Query<&mut PlayerHands>){
+pub fn stand_player_hand(mut query: Query<(&mut PlayerHands, &mut PlayerBalance)>){
+
+    println!("hello from stand");
+
     //TODO: figure out how to select the correct hand
     
     //implement some sort of current hand state.
@@ -47,6 +50,8 @@ pub fn stand_player_hand(mut query: Query<&mut PlayerHands>){
 }
 
 pub fn double_down_player_hand(mut query: Query<(&mut PlayerHands, &mut PlayerBalance)>){
+    
+    println!("hello from double down");
     //TODO: figure out how to select the correct hand
     
     //check if player has enough balance to double down on this hand
@@ -57,20 +62,6 @@ pub fn double_down_player_hand(mut query: Query<(&mut PlayerHands, &mut PlayerBa
         //end this hand (switch state?)
     //no?
         //notify player insufficient balance to double down
-}
-
-pub fn split_player_hand(mut query: Query<(&mut PlayerHands, &mut PlayerBalance)>){
-    //TODO: figure out how to select the correct hand
-    
-    //check if player has enough balance to split this hand
-    //check if this hand has correct split conditions (2 of the same face)      << We might be able to extract this functionality into the Split button
-        //yes?
-            //spawn new hand (with a card from previous card)
-            //remove said card from current hand
-            //Set some state indicating that the player has N hands
-            //resume play for the first hand
-        //no?
-            //return play as normal but notify player that they cannot split their hand (insufficient funds or invalid hand)
 }
 
 

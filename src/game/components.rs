@@ -13,6 +13,49 @@ pub struct Logo;
 #[derive(Component)]
 pub struct PressEnterToPlay;
 
+#[derive(Component)]
+pub struct BetAmountText {
+    pub bet_text: String,
+    pub balance_text: String,
+}
+impl Default for BetAmountText {
+    fn default() -> Self {
+        BetAmountText {
+            bet_text: "x".to_string(),
+            balance_text: "x".to_string(),
+        }
+    }
+}
+
+#[derive(Component, Debug, Clone, Copy, PartialEq)]
+pub enum ChipButtonValue {
+    One,
+    Five,
+    Ten,
+    Fifty,
+}
+
+#[derive(Component, Debug, Clone, Copy, PartialEq)]
+pub enum PlayerButtonValues {
+    Hit,
+    Stand,
+    DoubleDown,
+    Home,
+}
+
+
+
+// #[derive(Component)]
+// struct CardImageComponent {
+//     image_path: String,
+// }
+// impl Default for CardImageComponent {
+//     fn default() -> Self {
+//         CardImageComponent {
+//             image_path: "deck/2_of_clubs".to_string()
+//         }
+//     }
+// }
 
 #[derive(Component, Clone)]
 pub struct Card{
