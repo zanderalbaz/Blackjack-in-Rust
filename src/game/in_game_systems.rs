@@ -216,21 +216,10 @@ fn spawn_cards(parent: &mut ChildBuilder, assets: &Res<AssetServer>) {
     }
 }
 
-fn update_bet_text(bet_amount_entity: Entity, new_bet_text: String, mut query: Query<(&mut BetAmountText, &mut Text)>) {
-    if let Ok((mut text, _)) = query.get_mut(bet_amount_entity) {
-        text.bet_text = new_bet_text;
-    }
-}
-
-
-
 pub fn chip_button_click_system(
-
-    /*
-        This works, but i can't get it to update the correct text value yet due to a borrow issue above...
-     */
     mut bet_value: ResMut<BetValue>,
     mut interaction_query: Query<(&Button, &mut Interaction, &ChipButtonValue)>,
+    mut text_query: Query<(&TextComponents, &mut Text)>,
 ) {
     for (_, mut interaction, value) in interaction_query.iter_mut() {
         match *interaction {
@@ -244,6 +233,15 @@ pub fn chip_button_click_system(
                 *interaction = Interaction::None;
             }
             _ => {}
+        }
+
+        let new_bet_text = bet_value.value.to_string();
+
+        
+        for (text_component, mut text) in text_query.iter_mut() {
+            if let TextComponents::Bet = text_component {
+                text.sections[0].value = new_bet_text.clone(); 
+            }
         }
     }
     //println!("Current Bet Value: {}", bet_value.value);

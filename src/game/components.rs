@@ -16,13 +16,12 @@ pub struct PressEnterToPlay;
 #[derive(Component)]
 pub struct BetAmountText {
     pub bet_text: String,
-    pub balance_text: String,
+    
 }
 impl Default for BetAmountText {
     fn default() -> Self {
         BetAmountText {
-            bet_text: "x".to_string(),
-            balance_text: "x".to_string(),
+            bet_text: "0".to_string(),
         }
     }
 }
