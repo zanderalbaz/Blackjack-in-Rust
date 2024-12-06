@@ -60,8 +60,6 @@ pub fn shuffle_dealer_decks(mut query: Query<&mut Decks>,
     next_state.set(DeckState::Shuffled)
 }
 
-
-
 pub fn hit_dealer_hand(mut query: Query<&mut DealerHand>){
     for dealer_hand in &mut query{
         //add a card to dealer hand
@@ -71,5 +69,4 @@ pub fn hit_dealer_hand(mut query: Query<&mut DealerHand>){
 
 pub fn stand_dealer_hand(mut query: Query<(&mut DealerHand, &mut PlayerHands)>){    
     //end current hand and calculate win
-
 }

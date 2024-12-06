@@ -1,9 +1,8 @@
 use bevy::prelude::*;
-use super::{components::PressEnterToPlay, constants::AppState};
+use super::constants::AppState;
 
-pub fn start_game(mut query: Query<&mut Transform, With<PressEnterToPlay>>,
+pub fn start_game(
     keyboard_input: Res<ButtonInput<KeyCode>>,
-    mut state: ResMut<State<AppState>>,
     mut next_state: ResMut<NextState<AppState>>,
 
 ){

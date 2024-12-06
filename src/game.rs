@@ -15,11 +15,11 @@ use bevy::prelude::*;
 use components::Deck;
 use constants::{AppState, DeckState};
 
-use in_game_systems::{ chip_button_click_system, player_button_system, inGame_setup};
+use in_game_systems::{ chip_button_click_system, player_button_system, in_game_setup};
 use resources::{BalanceValue, BetValue};
 use start_game_systems::start_game;
 use plugins::StartupPlugin;
-use setup::{setupScreen_setup, start_setup};
+use setup::{setup_screen_setup, start_setup};
 use player_systems::{hit_player_hand, initial_shuffle, spawn_test_player, test_player_balance_change, test_player_hand};
 use dealer_systems::{shuffle_dealer_decks, spawn_test_dealer, test_dealer_decks, test_dealer_hand};
 
@@ -48,8 +48,8 @@ pub fn run(){
 
 	//ingame
 	.add_systems(Update, start_game.in_set(StartGameSystemSet))
-	.add_systems(Update, setupScreen_setup.in_set(SetupGameSystemSet).run_if(in_state(AppState::InGame).and_then(run_once())))
-	.add_systems(Update, inGame_setup.in_set(SetupGameSystemSet).run_if(in_state(AppState::InGame).and_then(run_once())))
+	.add_systems(Update, setup_screen_setup.in_set(SetupGameSystemSet).run_if(in_state(AppState::InGame).and_then(run_once())))
+	.add_systems(Update, in_game_setup.in_set(SetupGameSystemSet).run_if(in_state(AppState::InGame).and_then(run_once())))
 	.add_systems(Update, chip_button_click_system.in_set(SetupGameSystemSet).run_if(in_state(AppState::InGame)))
 	.add_systems(Update, player_button_system.in_set(SetupGameSystemSet).run_if(in_state(AppState::InGame)))
 

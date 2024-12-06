@@ -5,12 +5,11 @@ use crate::game::bundles::PlayerBundle;
 use super::components::Deck;
 use super::traits::{Dealable, Shufflable};
 
-pub fn initial_shuffle(mut commands: Commands, mut deck: ResMut<Deck>) {
+pub fn initial_shuffle(mut deck: ResMut<Deck>) {
     if deck.cards.is_empty() {
         
         *deck = Deck::default();
 
-        
         deck.shuffle();
     }
 }

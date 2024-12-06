@@ -47,7 +47,7 @@ pub fn start_setup(
 
 }
 
-pub fn setupScreen_setup(mut commands: Commands, 
+pub fn setup_screen_setup(mut commands: Commands, 
     asset_server: Res<AssetServer>, 
     mut texture_atlas: ResMut<Assets<TextureAtlasLayout>>,
     query: Query<Entity, With<Logo>>, 

@@ -1,7 +1,7 @@
 use bevy::prelude::*;
-use super::{components::{BetAmountText, ChipButtonValue, DealerHand, Decks, InGameCardAccess, PlayerBalance, PlayerButtonValues, PlayerHand, PlayerHands, TextComponents}, player_systems::{double_down_player_hand, hit_player_hand, stand_player_hand}, resources::{BalanceValue, BetValue}};
-use super::traits::Dealable;
-pub fn inGame_setup(mut commands: Commands, assets: Res<AssetServer>, player_hands: Query<&PlayerHands>, dealer_hands: Query<&DealerHand>) {
+use super::{components::{ChipButtonValue, DealerHand, InGameCardAccess, PlayerBalance, PlayerButtonValues, PlayerHand, PlayerHands, TextComponents}, player_systems::{double_down_player_hand, hit_player_hand, stand_player_hand}, resources::{BalanceValue, BetValue}};
+
+pub fn in_game_setup(mut commands: Commands, assets: Res<AssetServer>, player_hands: Query<&PlayerHands>, dealer_hands: Query<&DealerHand>) {
     
     let player_hand = &player_hands.single().0[0]; 
     let dealer_hand = dealer_hands.single();
@@ -175,9 +175,11 @@ fn spawn_text_fields(parent: &mut ChildBuilder, assets: &Res<AssetServer>) {
 //spawning card images
 fn spawn_player_cards(parent: &mut ChildBuilder, assets: &Res<AssetServer>, player_hand: &PlayerHand) {
 
+    // if hit... add 3rd card and update positions somehow...
+
     let card_positions = vec![
-        Vec2::new(50.0, 100.0),
-        Vec2::new(205.0, 100.0), 
+        Vec2::new(110.0, 100.0),
+        Vec2::new(210.0, 100.0), 
     ];
 
     for (i, card) in player_hand.cards.iter().enumerate() {
@@ -185,8 +187,8 @@ fn spawn_player_cards(parent: &mut ChildBuilder, assets: &Res<AssetServer>, play
         if let Some(position ) = card_positions.get(i) {
             parent.spawn(ImageBundle {
                 style: Style {
-                    width: Val::Px(150.0),
-                    height: Val::Px(195.0),
+                    width: Val::Px(90.0),
+                    height: Val::Px(135.0),
                     position_type: PositionType::Absolute,
                     left: Val::Px(position.x),
                     top: Val::Px(position.y),
@@ -209,8 +211,8 @@ fn spawn_player_cards(parent: &mut ChildBuilder, assets: &Res<AssetServer>, play
 fn spawn_dealer_cards(parent: &mut ChildBuilder, assets: &Res<AssetServer>, dealer_hand: &DealerHand) {
 
     let card_positions = vec![
-        Vec2::new(450.0, 100.0),
-        Vec2::new(605.0, 100.0), 
+        Vec2::new(500.0, 100.0),
+        Vec2::new(600.0, 100.0), 
     ];
 
     for (i, card) in dealer_hand.cards.iter().enumerate() {
@@ -218,8 +220,8 @@ fn spawn_dealer_cards(parent: &mut ChildBuilder, assets: &Res<AssetServer>, deal
         if let Some(position) = card_positions.get(i) {
             parent.spawn(ImageBundle {
                 style: Style {
-                    width: Val::Px(150.0),
-                    height: Val::Px(195.0),
+                    width: Val::Px(90.0),
+                    height: Val::Px(135.0),
                     position_type: PositionType::Absolute,
                     left: Val::Px(position.x),
                     top: Val::Px(position.y),
@@ -231,7 +233,6 @@ fn spawn_dealer_cards(parent: &mut ChildBuilder, assets: &Res<AssetServer>, deal
                 },
                 
                 visibility: Visibility::Hidden,
-                //visibility: if reveal { Visibility::Visible } else { Visibility::Hidden },
                 ..default()
             })
             .insert(InGameCardAccess::DealerCard1);

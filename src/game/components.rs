@@ -1,9 +1,10 @@
 use bevy::prelude::*;
-use rand::{rngs::StdRng, Rng, SeedableRng};
+use rand::Rng;
 
 use super::constants;
 use crate::game::traits::{Shufflable, Dealable};
 
+// start screen ---------------
 #[derive(Component)]
 pub struct Background;
 
@@ -12,6 +13,10 @@ pub struct Logo;
 
 #[derive(Component)]
 pub struct PressEnterToPlay;
+
+// -----------------------------
+
+// in game screen ---------------
 
 #[derive(Component)]
 pub struct BetAmountText {
@@ -58,6 +63,9 @@ pub enum TextComponents {
     Instruction,
     NotChanged,
 }
+// -----------------------------
+
+// card / deck components --------------
 
 #[derive(Component, Clone)]
 pub struct Card{
@@ -140,7 +148,6 @@ impl Default for Deck {
     }
 }
 
-
 #[derive(Component)]
 pub struct Decks{
     pub number_of_decks: u8,
@@ -167,7 +174,9 @@ impl Default for Decks{
         Self { number_of_decks: 1, decks: vec![Deck::default()] }
     }
 }
+// -----------------------------
 
+// player / dealer components ------------
 
 #[derive(Component)]
 pub struct PlayerName(pub String);
@@ -181,13 +190,13 @@ pub struct PlayerHand{
     pub bet: u64
 }
 
-//Need this Hands component in order to create a valid PlayerBundle
 #[derive(Component)]
 pub struct PlayerHands(pub Vec<PlayerHand>);
-
 
 #[derive(Component)]
 pub struct DealerHand{
     pub cards: Vec<Card>
 }
+
+// -----------------------------
 
