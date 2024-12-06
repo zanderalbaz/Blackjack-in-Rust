@@ -78,9 +78,6 @@ pub fn bet_player_hand(mut query: Query<(&mut PlayerHands, &mut PlayerBalance)>)
 
 //TODO: Figure out if we want to implement the surrender feature for hands (leaning on no)
 
-
-
-
 pub fn test_player_hand(mut query: Query<&mut PlayerHands>){
     for player_hand in &mut query{
         let bet = player_hand.0[0].bet;
