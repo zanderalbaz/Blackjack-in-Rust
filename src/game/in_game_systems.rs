@@ -207,6 +207,7 @@ fn spawn_cards(parent: &mut ChildBuilder, assets: &Res<AssetServer>) {
 //dealing with chip button clicks
 pub fn chip_button_click_system(
     mut bet_value: ResMut<BetValue>,
+    mut balance_value: ResMut<BalanceValue>,
     mut interaction_query: Query<(&Button, &mut Interaction, &ChipButtonValue)>,
     mut text_query: Query<(&TextComponents, &mut Text)>,
 ) {
@@ -214,10 +215,38 @@ pub fn chip_button_click_system(
         match *interaction {
             Interaction::Pressed => {
                 match *value {
-                    ChipButtonValue::One => bet_value.value += 1,
-                    ChipButtonValue::Five => bet_value.value += 5,
-                    ChipButtonValue::Ten => bet_value.value += 10,
-                    ChipButtonValue::Fifty => bet_value.value += 50,
+                    ChipButtonValue::One => {
+                        if balance_value.value >= 1{
+                            bet_value.value += 1;
+                            balance_value.value -= 1;
+                        } else {
+                            println!("Insufficient value for bet of 1");
+                        }
+                    },
+                    ChipButtonValue::Five => {
+                        if balance_value.value >= 5{
+                            bet_value.value += 5;
+                            balance_value.value -= 5;
+                        } else {
+                            println!("Insufficient value for bet of 5");
+                        }
+                    },
+                    ChipButtonValue::Ten => {
+                        if balance_value.value >= 10{
+                            bet_value.value += 10;
+                            balance_value.value -= 10;
+                        } else {
+                            println!("Insufficient value for bet of 10");
+                        }
+                    },
+                    ChipButtonValue::Fifty => {
+                        if balance_value.value >= 50{
+                            bet_value.value += 50;
+                            balance_value.value -= 50;
+                        } else {
+                            println!("Insufficient value for bet of 50");
+                        }
+                    },
                 }
                 *interaction = Interaction::None;
             }
@@ -225,12 +254,19 @@ pub fn chip_button_click_system(
         }
 
         let new_bet_text = bet_value.value.to_string();
+        let new_balance_text  = balance_value.value.to_string();
 
         for (text_component, mut text) in text_query.iter_mut() {
             if let TextComponents::Bet = text_component {
                 text.sections[0].value = new_bet_text.clone(); 
             }
+
+            if let TextComponents::Balance = text_component {
+                text.sections[0].value = new_balance_text.clone();
+            }
         }
+
+
     }
 
 }

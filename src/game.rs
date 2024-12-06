@@ -40,7 +40,7 @@ pub fn run(){
 
 	.add_systems(Startup, start_setup.in_set(StartGameSystemSet))
 	.insert_resource(BetValue { value: 0 })
-	.insert_resource(BalanceValue { value: 0 })
+	.insert_resource(BalanceValue { value: 1000 })
 
 	//ingame
 	.add_systems(Update, start_game.in_set(StartGameSystemSet))
