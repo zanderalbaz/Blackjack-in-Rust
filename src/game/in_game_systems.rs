@@ -1,6 +1,6 @@
 use bevy::prelude::*;
-use super::{components::{BetAmountText, ChipButtonValue, InGameCardAccess, PlayerBalance, PlayerButtonValues, PlayerHands, TextComponents}, player_systems::{double_down_player_hand, hit_player_hand, stand_player_hand}, resources::{BalanceValue, BetValue}};
-
+use super::{components::{BetAmountText, ChipButtonValue, DealerHand, Decks, InGameCardAccess, PlayerBalance, PlayerButtonValues, PlayerHands, TextComponents}, player_systems::{double_down_player_hand, hit_player_hand, stand_player_hand}, resources::{BalanceValue, BetValue}};
+use super::traits::Dealable;
 pub fn inGame_setup(mut commands: Commands, assets: Res<AssetServer>) {
     
     commands.spawn(NodeBundle {
@@ -171,6 +171,7 @@ fn spawn_text_fields(parent: &mut ChildBuilder, assets: &Res<AssetServer>) {
 
 //spawning card images
 fn spawn_cards(parent: &mut ChildBuilder, assets: &Res<AssetServer>) {
+
     let card_positions = vec![
         (Vec2::new(50.0, 100.0), "deck/2_of_clubs.png", InGameCardAccess::PlayerCard1),
         (Vec2::new(205.0, 100.0), "deck/king_of_hearts.png", InGameCardAccess::PlayerCard2),
@@ -274,6 +275,7 @@ pub fn chip_button_click_system(
 //dealing with player game button clicks
 pub fn player_button_system(
     mut player_query: Query<(&mut PlayerHands, &mut PlayerBalance)>,
+    mut dealer_query: Query<&mut DealerHand>,
     mut bet_value: ResMut<BetValue>, 
     mut player_balance_result: ResMut<BalanceValue>, 
     mut param_set: ParamSet<(
@@ -304,7 +306,6 @@ pub fn player_button_system(
     }
 
     if deal_button_pressed {
-
         for (_, _, value, mut visibility ) in param_set.p0().iter_mut() {
             match *value {
                 PlayerButtonValues::Deal => {
@@ -341,4 +342,3 @@ pub fn player_button_system(
     }
     
 }
-

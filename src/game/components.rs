@@ -2,7 +2,7 @@ use bevy::prelude::*;
 use rand::Rng;
 
 use super::constants;
-use crate::game::traits::Shufflable;
+use crate::game::traits::{Shufflable, Dealable};
 
 #[derive(Component)]
 pub struct Background;
@@ -79,12 +79,13 @@ pub struct Card{
     //Tuple used for implementing aces (1 or 11)
     pub value: (u8,u8), 
     pub front_asset_path: String,
-    pub back_asset_path: String
+    pub back_asset_path: String,
 }
 
-#[derive(Component)]
+#[derive(Component, Clone)]
 pub struct Deck{
-    pub cards: Vec<Card>
+    pub cards: Vec<Card>,
+    pub last_dealt_index: usize
 }
 
 impl Shufflable for Deck {
@@ -97,6 +98,18 @@ impl Shufflable for Deck {
             self.cards[i] = card2;
             self.cards[rand_index] = card1; 
         }
+    }
+}
+
+impl Dealable for Deck {
+    fn deal(&mut self) -> Card{
+        if self.last_dealt_index == 52 {
+            self.shuffle();
+            self.last_dealt_index = 0;
+            return self.cards[self.last_dealt_index].clone()
+        }
+        self.last_dealt_index += 1;
+        self.cards[self.last_dealt_index].clone()
     }
 }
 
@@ -132,7 +145,7 @@ impl Default for Deck {
                 cards.push(Card { suite: suite.clone(), face: face.clone(), value: *value, front_asset_path: front_asset_path, back_asset_path: String::from("deck/card_back.png") })
             }
         } 
-        Self { cards: cards}
+        Self { cards: cards, last_dealt_index: 0}
     }
 }
 
@@ -148,6 +161,13 @@ impl Shufflable for Decks {
         for deck in &mut self.decks{
             deck.shuffle();
         }
+    }
+}
+
+impl Dealable for Decks{
+    fn deal(&mut self) -> Card {
+        let mut deck_to_deal_from = self.decks[rand::thread_rng().gen_range(0..self.number_of_decks) as usize].clone();
+        deck_to_deal_from.deal()
     }
 }
 
