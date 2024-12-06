@@ -1,8 +1,11 @@
 use bevy::prelude::*;
-use super::{components::{BetAmountText, ChipButtonValue, DealerHand, Decks, InGameCardAccess, PlayerBalance, PlayerButtonValues, PlayerHands, TextComponents}, player_systems::{double_down_player_hand, hit_player_hand, stand_player_hand}, resources::{BalanceValue, BetValue}};
+use super::{components::{BetAmountText, ChipButtonValue, DealerHand, Decks, InGameCardAccess, PlayerBalance, PlayerButtonValues, PlayerHand, PlayerHands, TextComponents}, player_systems::{double_down_player_hand, hit_player_hand, stand_player_hand}, resources::{BalanceValue, BetValue}};
 use super::traits::Dealable;
-pub fn inGame_setup(mut commands: Commands, assets: Res<AssetServer>) {
+pub fn inGame_setup(mut commands: Commands, assets: Res<AssetServer>, player_hands: Query<&PlayerHands>, dealer_hands: Query<&DealerHand>) {
     
+    let player_hand = &player_hands.single().0[0]; 
+    let dealer_hand = dealer_hands.single();
+
     commands.spawn(NodeBundle {
         style: Style {
             width: Val::Percent(100.0),
@@ -19,7 +22,7 @@ pub fn inGame_setup(mut commands: Commands, assets: Res<AssetServer>) {
 
         spawn_text_fields(parent, &assets);
 
-        spawn_cards(parent, &assets);
+        spawn_cards(parent, &assets, player_hand, dealer_hand);
     });
 }
 
@@ -170,37 +173,76 @@ fn spawn_text_fields(parent: &mut ChildBuilder, assets: &Res<AssetServer>) {
 }
 
 //spawning card images
-fn spawn_cards(parent: &mut ChildBuilder, assets: &Res<AssetServer>) {
+fn spawn_player_cards(parent: &mut ChildBuilder, assets: &Res<AssetServer>, player_hand: &PlayerHand) {
 
     let card_positions = vec![
-        (Vec2::new(50.0, 100.0), "deck/2_of_clubs.png", InGameCardAccess::PlayerCard1),
-        (Vec2::new(205.0, 100.0), "deck/king_of_hearts.png", InGameCardAccess::PlayerCard2),
-        (Vec2::new(450.0, 100.0), "deck/card_back.png", InGameCardAccess::DealerCard1),
-        (Vec2::new(605.0, 100.0), "deck/card_back.png", InGameCardAccess::DealerCard2),
+        Vec2::new(50.0, 100.0),
+        Vec2::new(205.0, 100.0), 
     ];
 
-    for (position, card_image, card_id) in card_positions {
-        
-        parent.spawn(ImageBundle {
-            style: Style {
-                width: Val::Px(150.0),
-                height: Val::Px(195.0),
-                position_type: PositionType::Absolute,
-                left: Val::Px(position.x),
-                top: Val::Px(position.y),
+    for (i, card) in player_hand.cards.iter().enumerate() {
+
+        if let Some(position ) = card_positions.get(i) {
+            parent.spawn(ImageBundle {
+                style: Style {
+                    width: Val::Px(150.0),
+                    height: Val::Px(195.0),
+                    position_type: PositionType::Absolute,
+                    left: Val::Px(position.x),
+                    top: Val::Px(position.y),
+                    ..default()
+                },
+                image: UiImage {
+                    texture: assets.load(&card.front_asset_path),
+                    ..default()
+                },
+                
+                visibility: Visibility::Hidden,
                 ..default()
-            },
-            image: UiImage {
-                texture: assets.load(card_image),
-                ..default()
-            },
-            
-            visibility: Visibility::Hidden,
-            ..default()
-        })
-        .insert(card_id);
-        
+            })
+            .insert(InGameCardAccess::PlayerCard1);
+
+        }
     }
+}
+
+fn spawn_dealer_cards(parent: &mut ChildBuilder, assets: &Res<AssetServer>, dealer_hand: &DealerHand) {
+
+    let card_positions = vec![
+        Vec2::new(450.0, 100.0),
+        Vec2::new(605.0, 100.0), 
+    ];
+
+    for (i, card) in dealer_hand.cards.iter().enumerate() {
+
+        if let Some(position) = card_positions.get(i) {
+            parent.spawn(ImageBundle {
+                style: Style {
+                    width: Val::Px(150.0),
+                    height: Val::Px(195.0),
+                    position_type: PositionType::Absolute,
+                    left: Val::Px(position.x),
+                    top: Val::Px(position.y),
+                    ..default()
+                },
+                image: UiImage {
+                    texture: assets.load(&card.front_asset_path),
+                    ..default()
+                },
+                
+                visibility: Visibility::Hidden,
+                //visibility: if reveal { Visibility::Visible } else { Visibility::Hidden },
+                ..default()
+            })
+            .insert(InGameCardAccess::DealerCard1);
+
+        }    
+    }
+}
+
+fn spawn_cards(parent: &mut ChildBuilder, assets: &Res<AssetServer>, player_hand: &PlayerHand, dealer_hand: &DealerHand) {
+    spawn_player_cards(parent, assets, player_hand);
+    spawn_dealer_cards(parent, assets, dealer_hand);
 }
 
 //button click functions below -----------------------

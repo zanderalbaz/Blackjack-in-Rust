@@ -2,27 +2,34 @@ use bevy::prelude::*;
 use crate::game::components::{PlayerName, PlayerBalance, PlayerHand, PlayerHands, Card};
 use crate::game::bundles::PlayerBundle;
 
-pub fn spawn_test_player(mut commands: Commands){
+use super::components::Deck;
+use super::traits::{Dealable, Shufflable};
+
+pub fn initial_shuffle(mut commands: Commands, mut deck: ResMut<Deck>) {
+    if deck.cards.is_empty() {
+        
+        *deck = Deck::default();
+
+        
+        deck.shuffle();
+    }
+}
+
+pub fn spawn_test_player(mut commands: Commands, mut deck: ResMut<Deck>){
+
+    if deck.last_dealt_index == 0 {
+        deck.shuffle(); 
+    }
+
+    let card1 = deck.deal();
+    let card2 = deck.deal();
+
     commands.spawn(PlayerBundle{
         player_name: PlayerName(String::from("test").into()),
         player_balance: PlayerBalance(100.),
         player_hands: PlayerHands(vec![PlayerHand{
             bet: 100,
-            cards: //This is good for a test, but later we should spawn card components
-            vec![Card{ 
-                suite: String::from("spades").into(), 
-                face: String::from("2").into(), 
-                value: (3,0),
-                front_asset_path: String::from("deck/2_of_spades.png").into(),
-                back_asset_path: String::from("deck/card_back.png").into()
-            }, 
-            Card{
-                suite: String::from("spades").into(),
-                face: String::from("3").into(),
-                value: (3,0),
-                front_asset_path: String::from("deck/3_of_spades.png").into(),
-                back_asset_path: String::from("deck/card_back.png").into()
-            }]
+            cards: vec![card1, card2], 
         }]),
     });
 }

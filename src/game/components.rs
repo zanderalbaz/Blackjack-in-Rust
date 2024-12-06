@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-use rand::Rng;
+use rand::{rngs::StdRng, Rng, SeedableRng};
 
 use super::constants;
 use crate::game::traits::{Shufflable, Dealable};
@@ -59,19 +59,6 @@ pub enum TextComponents {
     NotChanged,
 }
 
-
-// #[derive(Component)]
-// struct CardImageComponent {
-//     image_path: String,
-// }
-// impl Default for CardImageComponent {
-//     fn default() -> Self {
-//         CardImageComponent {
-//             image_path: "deck/2_of_clubs".to_string()
-//         }
-//     }
-// }
-
 #[derive(Component, Clone)]
 pub struct Card{
     pub suite: String,
@@ -82,7 +69,7 @@ pub struct Card{
     pub back_asset_path: String,
 }
 
-#[derive(Component, Clone)]
+#[derive(Resource, Component, Clone)]
 pub struct Deck{
     pub cards: Vec<Card>,
     pub last_dealt_index: usize
@@ -145,7 +132,11 @@ impl Default for Deck {
                 cards.push(Card { suite: suite.clone(), face: face.clone(), value: *value, front_asset_path: front_asset_path, back_asset_path: String::from("deck/card_back.png") })
             }
         } 
-        Self { cards: cards, last_dealt_index: 0}
+        let mut deck = Self { cards: cards, last_dealt_index: 0};
+
+        deck.shuffle(); 
+        deck
+
     }
 }
 
@@ -189,7 +180,6 @@ pub struct PlayerHand{
     pub cards: Vec<Card>,
     pub bet: u64
 }
-
 
 //Need this Hands component in order to create a valid PlayerBundle
 #[derive(Component)]

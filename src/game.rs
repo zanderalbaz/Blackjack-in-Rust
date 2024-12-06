@@ -12,6 +12,7 @@ pub mod traits;
 pub mod resources;
 
 use bevy::prelude::*;
+use components::Deck;
 use constants::{AppState, DeckState};
 
 use in_game_systems::{ chip_button_click_system, player_button_system, inGame_setup};
@@ -19,7 +20,7 @@ use resources::{BalanceValue, BetValue};
 use start_game_systems::start_game;
 use plugins::StartupPlugin;
 use setup::{setupScreen_setup, start_setup};
-use player_systems::{hit_player_hand, spawn_test_player, test_player_balance_change, test_player_hand};
+use player_systems::{hit_player_hand, initial_shuffle, spawn_test_player, test_player_balance_change, test_player_hand};
 use dealer_systems::{shuffle_dealer_decks, spawn_test_dealer, test_dealer_decks, test_dealer_hand};
 
 #[derive(SystemSet, Debug, Hash, PartialEq, Eq, Clone)]
@@ -37,10 +38,13 @@ pub fn run(){
 	//startup
 	.configure_sets(Startup, StartGameSystemSet.before(SetupGameSystemSet))
 	.configure_sets(Startup, SetupGameSystemSet.before(DeckSystemSet))
-
 	.add_systems(Startup, start_setup.in_set(StartGameSystemSet))
+	.add_systems(Startup, initial_shuffle)
+
+	//resources
 	.insert_resource(BetValue { value: 0 })
 	.insert_resource(BalanceValue { value: 1000 })
+	.insert_resource(Deck::default())
 
 	//ingame
 	.add_systems(Update, start_game.in_set(StartGameSystemSet))

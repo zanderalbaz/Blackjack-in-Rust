@@ -1,6 +1,8 @@
 use bevy::prelude::*;
 
+use crate::game::traits::Shufflable;
 
+use super::components::Deck;
 
 //TODO: Implement system to update the player balance on GUI
 
