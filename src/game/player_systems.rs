@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-use crate::game::components::{PlayerName, PlayerBalance, PlayerHand, PlayerHands, Card};
+use crate::game::components::{Card, Decks, PlayerBalance, PlayerHand, PlayerHands, PlayerName};
 use crate::game::bundles::PlayerBundle;
 
 use super::components::Deck;

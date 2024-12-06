@@ -3,28 +3,32 @@ use crate::game::components::{Decks, DealerHand, Card, PlayerHands};
 use crate::game::bundles::DealerBundle;
 use crate::game::constants::DeckState;
 
-use super::traits::Shufflable;
+use super::components::Deck;
+use super::traits::{Dealable, Shufflable};
 
-pub fn spawn_test_dealer(mut commands: Commands){
-    commands.spawn(DealerBundle{
-        dealer_decks: Decks::default(),
-        dealer_hand: DealerHand{ 
-            cards: vec![Card{ 
-                suite: String::from("spades").into(), 
-                face: String::from("2").into(), 
-                value: (3,0),
-                front_asset_path: String::from("deck/2_of_spades.png").into(),
-                back_asset_path: String::from("deck/card_back.png").into()
-            }, 
-            Card{
-                suite: String::from("spades").into(),
-                face: String::from("3").into(),
-                value: (3,0),
-                front_asset_path: String::from("deck/3_of_spades.png").into(),
-                back_asset_path: String::from("deck/card_back.png").into()
-            }]
-        },
+pub fn spawn_test_dealer(mut commands: Commands, mut deck: ResMut<Deck>){
+    if deck.last_dealt_index == 0 {
+        deck.shuffle();
+    }
+
+    let dealer_card1 = deck.deal();
+    let dealer_card2 = deck.deal();
+
+    let dealer_hand = DealerHand {
+        cards: vec![dealer_card1.clone(), dealer_card2.clone()],
+    };
+
+    let dealer_decks = Decks {
+        number_of_decks: 2,
+        decks: vec![Deck::default(), Deck::default()], 
+    };
+
+    commands.spawn(DealerBundle {
+        dealer_hand,
+        dealer_decks,
     });
+
+    println!("Dealer's hand: {} of {}, {} of {}", dealer_card1.face, dealer_card1.suite, dealer_card2.face, dealer_card2.suite);
 }
 
 pub fn test_dealer_decks(mut query: Query<&mut Decks>){
@@ -69,5 +73,3 @@ pub fn stand_dealer_hand(mut query: Query<(&mut DealerHand, &mut PlayerHands)>){
     //end current hand and calculate win
 
 }
-
-
