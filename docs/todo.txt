@@ -4,6 +4,7 @@ TODO:
 
 PRIORITY:
 
+- logic to make it so that one dealer card is down and one shown until the right time 
 - start to implement dealer and player logic functions (hit, stand, doouble down)
 - when hit is called spawn a third card and shift positions
 - error check deal button so that when bet placed == 0 , prompts you to make bet of at least 1
