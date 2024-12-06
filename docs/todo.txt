@@ -9,6 +9,7 @@ PRIORITY:
 - when hit is called spawn a third card and shift positions
 - error check deal button so that when bet placed == 0 , prompts you to make bet of at least 1
 - implement home button that wipes game and restarts and goes to home
+- maybe a text for how much you won/lost 
 
 Lower priority: 
 - maybe a restart button that just resets the game 

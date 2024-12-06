@@ -316,6 +316,7 @@ pub fn chip_button_click_system(
 }
 
 //dealing with player game button clicks
+
 pub fn player_button_system(
     mut player_query: Query<(&mut PlayerHands, &mut PlayerBalance)>,
     mut dealer_query: Query<&mut DealerHand>,
@@ -324,7 +325,8 @@ pub fn player_button_system(
     mut param_set: ParamSet<(
         Query<(&Button, &mut Interaction, &PlayerButtonValues, &mut Visibility), With<Button>>,
         Query<(&InGameCardAccess, &mut Visibility)>,       
-        Query<(&TextComponents, &mut Visibility)>        
+        Query<(&TextComponents, &mut Visibility)>,      
+        Query<(&ChipButtonValue, &mut Visibility)>  
     )>,  
 ) {
     let mut hit_button_pressed = false;
@@ -349,7 +351,7 @@ pub fn player_button_system(
     }
 
     if deal_button_pressed {
-        for (_, _, value, mut visibility ) in param_set.p0().iter_mut() {
+        for (_, _, value,  mut visibility) in param_set.p0().iter_mut() {
             match *value {
                 PlayerButtonValues::Deal => {
                     *visibility = Visibility::Hidden; 
@@ -358,6 +360,16 @@ pub fn player_button_system(
                     *visibility = Visibility::Visible; 
                 }
                 _ => {}
+            }
+
+            
+        }
+
+        for(chip_value, mut visibility) in param_set.p3().iter_mut() {
+            match *chip_value {
+                ChipButtonValue::One | ChipButtonValue::Five | ChipButtonValue::Ten | ChipButtonValue::Fifty => {
+                    *visibility = Visibility::Hidden;
+                }
             }
         }
 
