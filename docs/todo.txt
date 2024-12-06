@@ -4,19 +4,17 @@ TODO:
 
 PRIORITY:
 
-- when hand is spawned for player, need to somehow connect those image_paths to the image path to InGameCardAccess values PlayerCard1, PlayerCard2, DealerCard1, DealerCard2
+- start to implement dealer and player logic functions (hit, stand, doouble down)
+- when hit is called spawn a third card and shift positions
+- error check deal button so that when bet placed == 0 , prompts you to make bet of at least 1
+- implement home button that wipes game and restarts and goes to home
 
-- implement player_system functions 
+Lower priority: 
+- maybe a restart button that just resets the game 
+- maybe a minus or undo button to subtract from bet amount or something similar 
 
-- update value of balance 
-
-
-
+ 
 GENERAL:
-
-- update value of bet [X]
-- Setup player [X], dealer[X], deck[X], and card[X] modules
-- Functionality and visuals to go from start->ingame [X]
 
 - Setup Player 
 	- int ID  << do not need X
@@ -29,6 +27,25 @@ GENERAL:
 	- Vector<Cards[]> Decks X
 	- functions (shuffle, hit/stand)
 
+- Setup Game Logic
+
+
+
+completed:
+
+- when hand is spawned for player, need to somehow connect those image_paths [X]
+- update value of bet [X]
+- Setup player [X], dealer[X], deck[X], and card[X] modules
+- Functionality and visuals to go from start->ingame [X]
+
+- Startup screen X
+	- display background and title and space bar prompt x
+	- press enter to switch us to setup game screen x
+
+- In Game screen X
+	- display fields and views x
+	- display visuals and buttons x
+
 - Setup Deck X
 	- Vector<Card> Cards X
 	- Shuffable/dealable traits << implemented Shuffable. I'm not sure if we need Dealable, but we'll see.
@@ -40,15 +57,5 @@ GENERAL:
 	- back/front asset X
 
 	-setup aces X
-
-- Setup Game Logic
-
-- Startup screen X
-	- display background and title and space bar prompt x
-	- press enter to switch us to setup game screen x
-
-- In Game screen X
-	- display fields and views x
-	- display visuals and buttons x
 
 
