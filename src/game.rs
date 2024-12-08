@@ -52,7 +52,7 @@ pub fn run(){
 	.add_systems(Update, start_game.in_set(StartGameSystemSet))
 	.add_systems(Update, setup_screen_setup.in_set(SetupGameSystemSet).run_if(in_state(AppState::InGame).and_then(run_once())))
 	.add_systems(Update, in_game_setup.in_set(SetupGameSystemSet).run_if(in_state(AppState::InGame).and_then(run_once())))
-	.add_systems(Update,print_all_dealer_cards.in_set(SetupGameSystemSet).run_if(in_state(AppState::InGame).and_then(run_once())))
+	// .add_systems(Update,print_all_dealer_cards.in_set(SetupGameSystemSet).run_if(in_state(AppState::InGame).and_then(run_once())))
 	.add_systems(Update, chip_button_click_system.in_set(SetupGameSystemSet).run_if(in_state(AppState::InGame)))
 	.add_systems(Update, player_button_system.in_set(SetupGameSystemSet).run_if(in_state(AppState::InGame)))
 

@@ -53,7 +53,7 @@ pub fn spawn_player(mut commands: Commands, mut deck: ResMut<Deck>, mut balance:
 }
 
 
-pub fn hit_player_hand(mut query: Query<(&mut PlayerHands, &mut PlayerBalance)>){
+pub fn hit_player_hand(mut query: Query<(&mut PlayerHand, &mut PlayerBalance)>){
 
     println!("hello from hit");
     
@@ -64,7 +64,7 @@ pub fn hit_player_hand(mut query: Query<(&mut PlayerHands, &mut PlayerBalance)>)
     }
 }
 
-pub fn stand_player_hand(mut query: Query<(&mut PlayerHands, &mut PlayerBalance)>){
+pub fn stand_player_hand(mut query: Query<(&mut PlayerHand, &mut PlayerBalance)>){
 
     println!("hello from stand");
 
@@ -74,7 +74,7 @@ pub fn stand_player_hand(mut query: Query<(&mut PlayerHands, &mut PlayerBalance)
     //end current hand and move to the next hand (dealer or player's next hand)
 }
 
-pub fn double_down_player_hand(mut query: Query<(&mut PlayerHands, &mut PlayerBalance)>){
+pub fn double_down_player_hand(mut query: Query<(&mut PlayerHand, &mut PlayerBalance)>){
     
     println!("hello from double down");
     //TODO: figure out how to select the correct hand
@@ -88,20 +88,6 @@ pub fn double_down_player_hand(mut query: Query<(&mut PlayerHands, &mut PlayerBa
     //no?
         //notify player insufficient balance to double down
 }
-
-
-//TODO: figure out how to check when a chip denomination is clicked
-pub fn bet_player_hand(mut query: Query<(&mut PlayerHands, &mut PlayerBalance)>){
-    //TODO: figure out how to select the correct hand
-
-    //check if player has enough balance to bet their selected chip denomination
-        //yes?
-            //add chip amount to the the bet on the player's hand (I beleive this should only apply to the first hand (i.e. no logic needed for split / double down))
-        //no?
-            //notify player insufficient funds
-}
-
-//TODO: Figure out if we want to implement the surrender feature for hands (leaning on no)
 
 pub fn test_player_hand(mut query: Query<&mut PlayerHands>){
     for player_hand in &mut query{

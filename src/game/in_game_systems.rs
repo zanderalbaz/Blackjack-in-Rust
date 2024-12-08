@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-use super::{components::{ChipButtonValue, DealerHand, InGameCardAccess, PlayerBalance, PlayerButtonValues, PlayerHand, PlayerHands, TextComponents, Card}, player_systems::{double_down_player_hand, hit_player_hand, stand_player_hand}, resources::{BalanceValue, BetValue}};
+use super::{components::{Card, ChipButtonValue, DealerHand, InGameCardAccess, PlayerBalance, PlayerButtonValues, PlayerHand, PlayerHands, TextComponents}, constants::{CARD_HORIZONTAL_SPACING, DEALER_CARDS_INITIAL_HORIZONTAL_POSITION, DEALER_CARDS_INITIAL_VERTICAL_POSITION}, player_systems::{double_down_player_hand, hit_player_hand, stand_player_hand}, resources::{BalanceValue, BetValue}};
 
 pub fn in_game_setup(mut commands: Commands, assets: Res<AssetServer>, player_hands: Query<&PlayerHands>, dealer_hands: Query<&DealerHand>) {
     
@@ -214,7 +214,7 @@ fn spawn_dealer_card(
     card: &Card,
     card_index: usize, 
     card_position: Vec2,
-    front_asset: bool){
+    load_front_asset: bool){
     // println!("running spawn_dealer_card for {} of {} with asset: {} at position: {}", card.face, card.suite, card.front_asset_path, card_index);
     parent.spawn(ImageBundle {
         style: Style {
@@ -226,7 +226,7 @@ fn spawn_dealer_card(
             ..default()
         },
         image: UiImage {
-            texture: if front_asset{ assets.load(&card.front_asset_path)} else { assets.load(&card.back_asset_path)},
+            texture: if load_front_asset{ assets.load(&card.front_asset_path)} else { assets.load(&card.back_asset_path)},
             ..default()
         },
         
@@ -237,21 +237,30 @@ fn spawn_dealer_card(
 }
 
 fn spawn_dealer_cards(parent: &mut ChildBuilder, assets: &Res<AssetServer>, dealer_hand: &DealerHand) {
-
-    let card_positions = vec![
-        Vec2::new(500.0, 100.0),
-        Vec2::new(600.0, 100.0), 
-    ];
-
     for (i, card) in dealer_hand.cards.iter().enumerate() {
-        if let Some(position) = card_positions.get(i) {
             if i == 0 {
-            spawn_dealer_card(parent, assets, card, i, *position, true);
+                spawn_dealer_card(
+                    parent, 
+                    assets,
+                    card,
+                    i,
+                    Vec2 {
+                        x: DEALER_CARDS_INITIAL_HORIZONTAL_POSITION + (i as f32)*CARD_HORIZONTAL_SPACING,
+                        y: 100.0 }, 
+                    false
+                );
             }
             else {
-                spawn_dealer_card(parent, assets, card, i, *position, false);
+                spawn_dealer_card(
+                    parent,
+                    assets,
+                    card,
+                    i,
+                    Vec2 { 
+                        x: DEALER_CARDS_INITIAL_HORIZONTAL_POSITION + (i as f32)*CARD_HORIZONTAL_SPACING,
+                        y: DEALER_CARDS_INITIAL_VERTICAL_POSITION },
+                    true);
             }
-        }    
     }
 }
 
@@ -259,6 +268,8 @@ fn spawn_cards(parent: &mut ChildBuilder, assets: &Res<AssetServer>, player_hand
     spawn_player_cards(parent, assets, player_hand);
     spawn_dealer_cards(parent, assets, dealer_hand);    
 }
+
+
 pub fn print_all_dealer_cards(
     dealer_hand_query: Query<&DealerHand>,
 ) {
@@ -350,7 +361,7 @@ pub fn chip_button_click_system(
 //dealing with player game button clicks
 
 pub fn player_button_system(
-    mut player_query: Query<(&mut PlayerHands, &mut PlayerBalance)>,
+    mut player_query: Query<(&mut PlayerHand, &mut PlayerBalance)>,
     mut dealer_query: Query<&mut DealerHand>,
     mut bet_value: ResMut<BetValue>, 
     mut player_balance_result: ResMut<BalanceValue>, 
@@ -366,7 +377,7 @@ pub fn player_button_system(
     let mut double_button_pressed = false;
     let mut deal_button_pressed = false;
     
-    for (_, mut interaction, value, mut visibility) in param_set.p0().iter_mut() {
+    for (_, mut interaction, value, _) in param_set.p0().iter_mut() {
         match *interaction {
             Interaction::Pressed => {
                 match *value {
