@@ -3,6 +3,7 @@ use crate::game::components::{Card, Decks, PlayerBalance, PlayerHand, PlayerHand
 use crate::game::bundles::PlayerBundle;
 
 use super::components::Deck;
+use super::resources::BalanceValue;
 use super::traits::{Dealable, Shufflable};
 
 pub fn initial_shuffle(mut deck: ResMut<Deck>) {
@@ -28,6 +29,24 @@ pub fn spawn_test_player(mut commands: Commands, mut deck: ResMut<Deck>){
         player_balance: PlayerBalance(100.),
         player_hands: PlayerHands(vec![PlayerHand{
             bet: 100,
+            cards: vec![card1, card2], 
+        }]),
+    });
+}
+
+pub fn spawn_player(mut commands: Commands, mut deck: ResMut<Deck>, mut balance: ResMut<BalanceValue>){
+    if deck.last_dealt_index == 0 {
+        deck.shuffle(); 
+    }
+
+    let card1 = deck.deal();
+    let card2 = deck.deal();
+
+    commands.spawn(PlayerBundle{
+        player_name: PlayerName(String::from("test").into()),
+        player_balance: PlayerBalance(balance.value as f64),
+        player_hands: PlayerHands(vec![PlayerHand{
+            bet: 0,
             cards: vec![card1, card2], 
         }]),
     });

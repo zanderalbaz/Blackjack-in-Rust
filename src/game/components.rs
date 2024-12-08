@@ -50,10 +50,8 @@ pub enum PlayerButtonValues {
 
 #[derive(Component, Debug, Clone, Copy, PartialEq)]
 pub enum InGameCardAccess {
-    PlayerCard1,
-    PlayerCard2,
-    DealerCard1,
-    DealerCard2,
+    DealerCard(usize),
+    PlayerCard(usize),
 }
 
 #[derive(Component, Debug, Clone, Copy, PartialEq)]

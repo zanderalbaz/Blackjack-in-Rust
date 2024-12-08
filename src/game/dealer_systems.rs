@@ -6,6 +6,29 @@ use crate::game::constants::DeckState;
 use super::components::Deck;
 use super::traits::{Dealable, Shufflable};
 
+pub fn spawn_dealer(mut commands: Commands, mut deck: ResMut<Deck>){
+    if deck.last_dealt_index == 0 {
+        deck.shuffle();
+    }
+
+    let dealer_card1 = deck.deal();
+    let dealer_card2 = deck.deal();
+
+    let dealer_hand = DealerHand {
+        cards: vec![dealer_card1.clone(), dealer_card2.clone()],
+    };
+
+    let dealer_decks = Decks {
+        number_of_decks: 2,
+        decks: vec![Deck::default(), Deck::default()], 
+    };
+
+    commands.spawn(DealerBundle {
+        dealer_hand,
+        dealer_decks,
+    });
+}
+
 pub fn spawn_test_dealer(mut commands: Commands, mut deck: ResMut<Deck>){
     if deck.last_dealt_index == 0 {
         deck.shuffle();

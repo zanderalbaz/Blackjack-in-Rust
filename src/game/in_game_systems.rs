@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-use super::{components::{ChipButtonValue, DealerHand, InGameCardAccess, PlayerBalance, PlayerButtonValues, PlayerHand, PlayerHands, TextComponents}, player_systems::{double_down_player_hand, hit_player_hand, stand_player_hand}, resources::{BalanceValue, BetValue}};
+use super::{components::{ChipButtonValue, DealerHand, InGameCardAccess, PlayerBalance, PlayerButtonValues, PlayerHand, PlayerHands, TextComponents, Card}, player_systems::{double_down_player_hand, hit_player_hand, stand_player_hand}, resources::{BalanceValue, BetValue}};
 
 pub fn in_game_setup(mut commands: Commands, assets: Res<AssetServer>, player_hands: Query<&PlayerHands>, dealer_hands: Query<&DealerHand>) {
     
@@ -202,10 +202,38 @@ fn spawn_player_cards(parent: &mut ChildBuilder, assets: &Res<AssetServer>, play
                 visibility: Visibility::Hidden,
                 ..default()
             })
-            .insert(InGameCardAccess::PlayerCard1);
+            .insert(InGameCardAccess::PlayerCard(i));
 
         }
     }
+}
+
+fn spawn_dealer_card(
+    parent: &mut ChildBuilder, 
+    assets: &Res<AssetServer>, 
+    card: &Card,
+    card_index: usize, 
+    card_position: Vec2,
+    front_asset: bool){
+    // println!("running spawn_dealer_card for {} of {} with asset: {} at position: {}", card.face, card.suite, card.front_asset_path, card_index);
+    parent.spawn(ImageBundle {
+        style: Style {
+            width: Val::Px(90.0),
+            height: Val::Px(135.0),
+            position_type: PositionType::Absolute,
+            left: Val::Px(card_position.x),
+            top: Val::Px(card_position.y),
+            ..default()
+        },
+        image: UiImage {
+            texture: if front_asset{ assets.load(&card.front_asset_path)} else { assets.load(&card.back_asset_path)},
+            ..default()
+        },
+        
+        visibility: Visibility::Hidden,
+        ..default()
+    })
+    .insert(InGameCardAccess::DealerCard(card_index));
 }
 
 fn spawn_dealer_cards(parent: &mut ChildBuilder, assets: &Res<AssetServer>, dealer_hand: &DealerHand) {
@@ -216,34 +244,30 @@ fn spawn_dealer_cards(parent: &mut ChildBuilder, assets: &Res<AssetServer>, deal
     ];
 
     for (i, card) in dealer_hand.cards.iter().enumerate() {
-
         if let Some(position) = card_positions.get(i) {
-            parent.spawn(ImageBundle {
-                style: Style {
-                    width: Val::Px(90.0),
-                    height: Val::Px(135.0),
-                    position_type: PositionType::Absolute,
-                    left: Val::Px(position.x),
-                    top: Val::Px(position.y),
-                    ..default()
-                },
-                image: UiImage {
-                    texture: assets.load(&card.front_asset_path),
-                    ..default()
-                },
-                
-                visibility: Visibility::Hidden,
-                ..default()
-            })
-            .insert(InGameCardAccess::DealerCard1);
-
+            if i == 0 {
+            spawn_dealer_card(parent, assets, card, i, *position, true);
+            }
+            else {
+                spawn_dealer_card(parent, assets, card, i, *position, false);
+            }
         }    
     }
 }
 
 fn spawn_cards(parent: &mut ChildBuilder, assets: &Res<AssetServer>, player_hand: &PlayerHand, dealer_hand: &DealerHand) {
     spawn_player_cards(parent, assets, player_hand);
-    spawn_dealer_cards(parent, assets, dealer_hand);
+    spawn_dealer_cards(parent, assets, dealer_hand);    
+}
+pub fn print_all_dealer_cards(
+    dealer_hand_query: Query<&DealerHand>,
+) {
+    for dealer_hand in dealer_hand_query.iter() {
+        println!("Dealer has {} cards:", dealer_hand.cards.len());
+        for (i, card) in dealer_hand.cards.iter().enumerate() {
+            println!("Dealer Card {}: {} of {}", i, card.face, card.suite);   
+        }
+    }
 }
 
 //button click functions below -----------------------
@@ -403,10 +427,5 @@ pub fn player_button_system(
     else if double_button_pressed {
         double_down_player_hand(player_query);
     }
-    
-}
-
-
-pub fn set_deal_button_visible(){
     
 }
