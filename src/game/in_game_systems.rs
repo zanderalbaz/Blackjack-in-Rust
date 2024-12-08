@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-use super::{components::{Card, ChipButtonValue, DealerHand, InGameCardAccess, PlayerBalance, PlayerButtonValues, PlayerHand, PlayerHands, TextComponents}, constants::{CARD_HORIZONTAL_SPACING, DEALER_CARDS_INITIAL_HORIZONTAL_POSITION, DEALER_CARDS_INITIAL_VERTICAL_POSITION}, player_systems::{double_down_player_hand, hit_player_hand, stand_player_hand}, resources::{BalanceValue, BetValue}};
+use super::{components::{Card, ChipButtonValue, DealerHand, InGameCardAccess, PlayerBalance, PlayerButtonValues, PlayerHand, PlayerHands, TextComponents}, constants::{CARD_HORIZONTAL_SPACING, CARD_VERTICAL_SPACING, DEALER_CARDS_INITIAL_HORIZONTAL_POSITION, DEALER_CARDS_INITIAL_VERTICAL_POSITION, PLAYER_CARDS_INITIAL_HORIZONTAL_POSITION, PLAYER_CARDS_INITIAL_VERTICAL_POSITION}, player_systems::{double_down_player_hand, hit_player_hand, stand_player_hand}, resources::{BalanceValue, BetValue}};
 
 pub fn in_game_setup(mut commands: Commands, assets: Res<AssetServer>, player_hands: Query<&PlayerHands>, dealer_hands: Query<&DealerHand>) {
     
@@ -172,39 +172,43 @@ fn spawn_text_fields(parent: &mut ChildBuilder, assets: &Res<AssetServer>) {
     spawn_text(parent, &assets, Vec2::new(40.0, 200.0), "Please place a bet then hit deal", 30.0, TextComponents::Instruction);
 }
 
-//spawning card images
+fn spawn_player_card(
+    parent: &mut ChildBuilder,
+    assets: &Res<AssetServer>,
+    card: &Card,
+    card_index: usize,
+    card_position: Vec2
+) {
+    parent.spawn(ImageBundle {
+        style: Style {
+            width: Val::Px(90.0),
+            height: Val::Px(135.0),
+            position_type: PositionType::Absolute,
+            left: Val::Px(card_position.x),
+            top: Val::Px(card_position.y),
+            ..default()
+        },
+        image: UiImage {
+            texture: assets.load(&card.front_asset_path),
+            ..default()
+        },
+        visibility: Visibility::Hidden,
+        ..default()
+    })
+    .insert(InGameCardAccess::PlayerCard(card_index));
+}
+
 fn spawn_player_cards(parent: &mut ChildBuilder, assets: &Res<AssetServer>, player_hand: &PlayerHand) {
-
-    // if hit... add 3rd card and update positions somehow...
-
-    let card_positions = vec![
-        Vec2::new(110.0, 100.0),
-        Vec2::new(210.0, 100.0), 
-    ];
-
     for (i, card) in player_hand.cards.iter().enumerate() {
-
-        if let Some(position ) = card_positions.get(i) {
-            parent.spawn(ImageBundle {
-                style: Style {
-                    width: Val::Px(90.0),
-                    height: Val::Px(135.0),
-                    position_type: PositionType::Absolute,
-                    left: Val::Px(position.x),
-                    top: Val::Px(position.y),
-                    ..default()
-                },
-                image: UiImage {
-                    texture: assets.load(&card.front_asset_path),
-                    ..default()
-                },
-                
-                visibility: Visibility::Hidden,
-                ..default()
-            })
-            .insert(InGameCardAccess::PlayerCard(i));
-
-        }
+        spawn_player_card(
+            parent,
+            assets,
+            card,
+            i,
+            Vec2 {
+                x: PLAYER_CARDS_INITIAL_HORIZONTAL_POSITION + (i as f32)*CARD_HORIZONTAL_SPACING,
+                y: PLAYER_CARDS_INITIAL_VERTICAL_POSITION  + (i as f32)*CARD_VERTICAL_SPACING}, 
+        );
     }
 }
 
@@ -246,7 +250,7 @@ fn spawn_dealer_cards(parent: &mut ChildBuilder, assets: &Res<AssetServer>, deal
                     i,
                     Vec2 {
                         x: DEALER_CARDS_INITIAL_HORIZONTAL_POSITION + (i as f32)*CARD_HORIZONTAL_SPACING,
-                        y: 100.0 }, 
+                        y: DEALER_CARDS_INITIAL_VERTICAL_POSITION + (i as f32)*CARD_VERTICAL_SPACING }, 
                     false
                 );
             }
@@ -258,7 +262,7 @@ fn spawn_dealer_cards(parent: &mut ChildBuilder, assets: &Res<AssetServer>, deal
                     i,
                     Vec2 { 
                         x: DEALER_CARDS_INITIAL_HORIZONTAL_POSITION + (i as f32)*CARD_HORIZONTAL_SPACING,
-                        y: DEALER_CARDS_INITIAL_VERTICAL_POSITION },
+                        y: DEALER_CARDS_INITIAL_VERTICAL_POSITION  + (i as f32)*CARD_VERTICAL_SPACING},
                     true);
             }
     }

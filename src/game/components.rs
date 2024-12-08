@@ -116,7 +116,7 @@ impl Default for Deck {
             String::from("diamonds"),
             String::from("hearts")
             ];
-        let face_values: [(String, (u8, u8)); 13] = [
+        let face_values = [
             (String::from("ace"), (1,11)),
             (String::from("2"), (2,constants::NO_CARD_VALUE)),
             (String::from("3"), (3,constants::NO_CARD_VALUE)),
@@ -135,7 +135,14 @@ impl Default for Deck {
         for suite in &suites{
             for (face, value) in &face_values{
                 let front_asset_path = format!("deck/{}_of_{}.png", face, suite);
-                cards.push(Card { suite: suite.clone(), face: face.clone(), value: *value, front_asset_path: front_asset_path, back_asset_path: String::from("deck/card_back.png") })
+                cards.push(
+                    Card{ 
+                        suite: suite.clone(), 
+                        face: face.clone(), 
+                    value: *value,
+                    front_asset_path: front_asset_path,
+                    back_asset_path: String::from("deck/card_back.png") }
+                )
             }
         } 
         let mut deck = Self { cards: cards, last_dealt_index: 0};

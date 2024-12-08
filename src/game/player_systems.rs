@@ -8,9 +8,7 @@ use super::traits::{Dealable, Shufflable};
 
 pub fn initial_shuffle(mut deck: ResMut<Deck>) {
     if deck.cards.is_empty() {
-        
         *deck = Deck::default();
-
         deck.shuffle();
     }
 }
@@ -38,16 +36,16 @@ pub fn spawn_player(mut commands: Commands, mut deck: ResMut<Deck>, mut balance:
     if deck.last_dealt_index == 0 {
         deck.shuffle(); 
     }
-
-    let card1 = deck.deal();
-    let card2 = deck.deal();
-
+    let mut cards: Vec<Card> = vec![];
+    for i in 0..2{
+        cards.push(deck.deal());
+    }
     commands.spawn(PlayerBundle{
-        player_name: PlayerName(String::from("test").into()),
+        player_name: PlayerName(String::from("").into()),
         player_balance: PlayerBalance(balance.value as f64),
         player_hands: PlayerHands(vec![PlayerHand{
             bet: 0,
-            cards: vec![card1, card2], 
+            cards: cards, 
         }]),
     });
 }
