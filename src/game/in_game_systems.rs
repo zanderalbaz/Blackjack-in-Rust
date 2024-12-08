@@ -134,7 +134,7 @@ fn spawn_buttons(parent: &mut ChildBuilder, assets: &Res<AssetServer>) {
         };
 
         button_bundle.visibility = match button_value {
-            PlayerButtonValues::Deal => Visibility::Visible,
+            // PlayerButtonValues::Deal => Visibility::Visible,
             _ => Visibility::Hidden,
         };
 
@@ -254,6 +254,8 @@ pub fn chip_button_click_system(
     mut balance_value: ResMut<BalanceValue>,
     mut interaction_query: Query<(&Button, &mut Interaction, &ChipButtonValue)>,
     mut text_query: Query<(&TextComponents, &mut Text)>,
+    mut deal_button_query: Query<(&PlayerButtonValues, &mut Visibility), With<PlayerButtonValues>>,
+
 ) {
     for (_, mut interaction, value) in interaction_query.iter_mut() {
         match *interaction {
@@ -293,6 +295,12 @@ pub fn chip_button_click_system(
                     },
                 }
                 *interaction = Interaction::None;
+
+                for (button_value, mut visibility) in deal_button_query.iter_mut() {
+                    if let PlayerButtonValues::Deal = *button_value {
+                        *visibility = Visibility::Visible;
+                    }
+                }
             }
             _ => {}
         }
@@ -395,5 +403,10 @@ pub fn player_button_system(
     else if double_button_pressed {
         double_down_player_hand(player_query);
     }
+    
+}
+
+
+pub fn set_deal_button_visible(){
     
 }
