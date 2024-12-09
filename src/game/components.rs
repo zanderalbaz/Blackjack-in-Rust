@@ -96,7 +96,8 @@ impl Shufflable for Deck {
 
 impl Dealable for Deck {
     fn deal(&mut self) -> Card{
-        if self.last_dealt_index == 52 {
+        if self.last_dealt_index == 51 {
+            println!("Shuffling");
             self.shuffle();
             self.last_dealt_index = 0;
             return self.cards[self.last_dealt_index].clone()

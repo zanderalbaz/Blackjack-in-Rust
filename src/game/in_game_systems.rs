@@ -1,7 +1,12 @@
 use bevy::prelude::*;
 use super::{components::{Card, ChipButtonValue, DealerHand, InGameCardAccess, PlayerBalance, PlayerButtonValues, PlayerHand, PlayerHands, TextComponents}, constants::{CARD_HORIZONTAL_SPACING, CARD_VERTICAL_SPACING, DEALER_CARDS_INITIAL_HORIZONTAL_POSITION, DEALER_CARDS_INITIAL_VERTICAL_POSITION, PLAYER_CARDS_INITIAL_HORIZONTAL_POSITION, PLAYER_CARDS_INITIAL_VERTICAL_POSITION}, player_systems::{double_down_player_hand, hit_player_hand, stand_player_hand}, resources::{BalanceValue, BetValue}};
 
-pub fn in_game_setup(mut commands: Commands, assets: Res<AssetServer>, player_hands: Query<&PlayerHands>, dealer_hands: Query<&DealerHand>) {
+pub fn in_game_setup(
+    mut commands: Commands,
+    assets: Res<AssetServer>,
+    player_hands: Query<&PlayerHands>, 
+    dealer_hands: Query<&DealerHand>,
+    ) {
     
     let player_hand = &player_hands.single().0[0]; 
     let dealer_hand = dealer_hands.single();
@@ -170,6 +175,37 @@ fn spawn_text_fields(parent: &mut ChildBuilder, assets: &Res<AssetServer>) {
     spawn_text(parent, &assets, Vec2::new(255.0, 15.0), "x", 30.0, TextComponents::Balance);
     spawn_text(parent, &assets, Vec2::new(415.0, 15.0), "Dealer", 30.0, TextComponents::NotChanged);
     spawn_text(parent, &assets, Vec2::new(40.0, 200.0), "Please place a bet then hit deal", 30.0, TextComponents::Instruction);
+}
+pub fn spawn_player_card_after_setup(
+    commands: &mut Commands,
+    assets: &Res<AssetServer>,
+    card: &Card,
+    card_index: usize,
+    card_position: Vec2,
+    z_layer: f32,
+) {
+    commands
+        .spawn(ImageBundle {
+            style: Style {
+                width: Val::Px(90.0),
+                height: Val::Px(135.0),
+                position_type: PositionType::Absolute,
+                left: Val::Px(card_position.x),
+                top: Val::Px(card_position.y),
+                ..default()
+            },
+            image: UiImage {
+                texture: assets.load(&card.front_asset_path),
+                ..default()
+            },
+            visibility: Visibility::Visible,
+            transform: Transform {
+                translation: Vec3::new(card_position.x, card_position.y, z_layer), // Z-layer for rendering
+                ..default()
+            },
+            ..default()
+        })
+        .insert(InGameCardAccess::PlayerCard(card_index));
 }
 
 fn spawn_player_card(
@@ -365,6 +401,8 @@ pub fn chip_button_click_system(
 //dealing with player game button clicks
 
 pub fn player_button_system(
+    // commands: &mut Commands,
+    // assets: &Res<AssetServer>,
     mut player_query: Query<(&mut PlayerHand, &mut PlayerBalance)>,
     mut dealer_query: Query<&mut DealerHand>,
     mut bet_value: ResMut<BetValue>, 
@@ -385,13 +423,27 @@ pub fn player_button_system(
         match *interaction {
             Interaction::Pressed => {
                 match *value {
-                    PlayerButtonValues::Stand => stand_button_pressed = true,
-                    PlayerButtonValues::Hit => hit_button_pressed = true,
-                    PlayerButtonValues::DoubleDown => double_button_pressed = true,
-                    PlayerButtonValues::Home => println!("Home"),
-                    PlayerButtonValues::Deal => deal_button_pressed = true,   
+                    PlayerButtonValues::Stand => {
+                        stand_button_pressed = true;
+                        *interaction = Interaction::None;
+                    },
+                    PlayerButtonValues::Hit => {
+                        // hit_button_pressed = true;
+                        // *interaction = Interaction::None; 
+                    },
+                    PlayerButtonValues::DoubleDown => {
+                        double_button_pressed = true;
+                        *interaction = Interaction::None;
+                    },
+                    PlayerButtonValues::Home => {
+                        println!("Home");
+                        *interaction = Interaction::None;
+                    },
+                    PlayerButtonValues::Deal => {
+                        deal_button_pressed = true;
+                        *interaction = Interaction::None;
+                    },   
                 }
-                *interaction = Interaction::None;
             }
             _ => {}
         }
@@ -437,7 +489,8 @@ pub fn player_button_system(
         stand_player_hand(player_query);
     }
     else if hit_button_pressed {
-        hit_player_hand(player_query);
+        println!("player_button_hit_pressed");
+        // hit_player_hand(commands, assets, player_query);
     }
     else if double_button_pressed {
         double_down_player_hand(player_query);

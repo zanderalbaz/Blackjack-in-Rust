@@ -1,9 +1,10 @@
 use bevy::prelude::*;
-use crate::game::components::{Card, Decks, PlayerBalance, PlayerHand, PlayerHands, PlayerName};
+use crate::game::components::{PlayerButtonValues, Card, Decks, PlayerBalance, PlayerHand, PlayerHands, PlayerName};
 use crate::game::bundles::PlayerBundle;
-
+use crate::game::constants::{PLAYER_CARDS_INITIAL_HORIZONTAL_POSITION, PLAYER_CARDS_INITIAL_VERTICAL_POSITION, CARD_HORIZONTAL_SPACING, CARD_VERTICAL_SPACING};
+use crate::game::in_game_systems::spawn_player_card_after_setup;
 use super::components::Deck;
-use super::resources::BalanceValue;
+use super::resources::{BalanceValue};
 use super::traits::{Dealable, Shufflable};
 
 pub fn initial_shuffle(mut deck: ResMut<Deck>) {
@@ -32,7 +33,7 @@ pub fn spawn_test_player(mut commands: Commands, mut deck: ResMut<Deck>){
     });
 }
 
-pub fn spawn_player(mut commands: Commands, mut deck: ResMut<Deck>, mut balance: ResMut<BalanceValue>){
+pub fn spawn_player(mut commands: Commands, mut deck: ResMut<Deck>, balance: ResMut<BalanceValue>){
     if deck.last_dealt_index == 0 {
         deck.shuffle(); 
     }
@@ -51,15 +52,51 @@ pub fn spawn_player(mut commands: Commands, mut deck: ResMut<Deck>, mut balance:
 }
 
 
-pub fn hit_player_hand(mut query: Query<(&mut PlayerHand, &mut PlayerBalance)>){
-
-    println!("hello from hit");
+pub fn hit_player_hand( 
+    mut commands: Commands,
+    mut deck: ResMut<Deck>,
+    assets: Res<AssetServer>,
+    mut player_query: Query<(&mut PlayerHands, &mut PlayerBalance)>,
+    mut hit_button_query: Query<(&Button, &mut Interaction, &PlayerButtonValues)>,
+){
+    // println!("hello from hit");
     
     //TODO: figure out how to select the correct hand
-    for player_hand in &mut query{
-        //add a card to the correct hand
-        //check for hand bust (over 21)
+    for (_, mut interaction, value) in hit_button_query.iter_mut(){
+        match *interaction{
+            Interaction::Pressed => {
+                match *value{
+                    PlayerButtonValues::Hit => {    
+                        *interaction = Interaction::None;
+                        let (mut player_hands, _) = player_query.single_mut(); 
+                        let player_hand = &mut player_hands.0[0];
+                        let insert_index = player_hand.cards.len();
+                        let card_to_insert = deck.deal();
+                        player_hand.cards.push(card_to_insert.clone());
+                        let position = Vec2 {
+                            x: PLAYER_CARDS_INITIAL_HORIZONTAL_POSITION + (insert_index as f32)*CARD_HORIZONTAL_SPACING,
+                            y: PLAYER_CARDS_INITIAL_VERTICAL_POSITION  + (insert_index as f32)*CARD_VERTICAL_SPACING};
+                        
+                        println!("Inserting card: {} of {} into player hand at index {}",   player_hand.cards[insert_index].face, player_hand.cards[insert_index].suite, insert_index);
+                        spawn_player_card_after_setup(
+                            &mut commands, 
+                            &assets, 
+                            &card_to_insert, 
+                            insert_index, 
+                            position,
+                            insert_index as f32 + 100.0,
+                        );
+                    
+                        *interaction = Interaction::None;
+                    }
+                    _ => {}
+                }
+            }
+            _ => {}
+        }
     }
+
+    //     //check for hand bust (over 21)
 }
 
 pub fn stand_player_hand(mut query: Query<(&mut PlayerHand, &mut PlayerBalance)>){
