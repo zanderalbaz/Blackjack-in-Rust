@@ -78,6 +78,10 @@ pub fn hit_player_hand(
                             y: PLAYER_CARDS_INITIAL_VERTICAL_POSITION  + (insert_index as f32)*CARD_VERTICAL_SPACING};
                         
                         println!("Inserting card: {} of {} into player hand at index {}",   player_hand.cards[insert_index].face, player_hand.cards[insert_index].suite, insert_index);
+                        //Changing the z-index does not spawn the card on top of the other cards.
+                        //Tried:
+                        //(1) Editing in_game_setup to not spawn cards as children -- This breaks the add_system command for in_game_setup
+                        //(2) Changing the z-index of the in_game_setup cards to be less than the newly spawned card -- This does not fix the issue
                         spawn_player_card_after_setup(
                             &mut commands, 
                             &assets, 
