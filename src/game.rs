@@ -71,7 +71,9 @@ pub fn run(){
 
 	.add_systems(OnEnter(GameRoundState::PlayerHand), track_game_state)
 	.add_systems(OnEnter(GameRoundState::DealerHand), track_game_state)
-	.add_systems(OnEnter(GameRoundState::DealerHand), reveal_dealer_hand)
+
+	.add_systems(OnExit(GameRoundState::PlayerHand), reveal_dealer_hand)
+	
 	.add_systems(OnEnter(GameRoundState::RoundEnd), track_game_state)
 	.add_systems(OnEnter(GameRoundState::RoundStart), track_game_state)
 	.add_systems(OnEnter(GameRoundState::Betting), track_game_state)
