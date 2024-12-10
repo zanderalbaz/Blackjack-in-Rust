@@ -3,7 +3,7 @@ use crate::game::components::{Decks, DealerHand, Card, PlayerHands};
 use crate::game::bundles::DealerBundle;
 use crate::game::constants::DeckState;
 
-use super::components::Deck;
+use super::components::{Deck, InGameCardAccess};
 use super::traits::{Dealable, Shufflable};
 
 pub fn spawn_dealer(mut commands: Commands, mut deck: ResMut<Deck>){
@@ -81,6 +81,25 @@ pub fn shuffle_dealer_decks(mut query: Query<&mut Decks>,
         decks.shuffle();
     }
     next_state.set(DeckState::Shuffled)
+}
+
+pub fn reveal_dealer_hand(
+    mut dealer_card_image_query: Query<(&InGameCardAccess, &mut UiImage)>,
+    dealer_hand_query: Query<&DealerHand>,
+    assets: Res<AssetServer>,
+){
+    for (card_access, mut ui_image) in dealer_card_image_query.iter_mut() {
+        if let InGameCardAccess::DealerCard(card_index) = card_access {
+            if *card_index == 0 {
+                for dealer_hand in dealer_hand_query.iter(){
+                    let card = &dealer_hand.cards[0];
+                    let card_front_texture = assets.load(card.front_asset_path.clone());
+                    ui_image.texture = card_front_texture;
+                }
+                }
+              
+        }
+    }
 }
 
 pub fn hit_dealer_hand(mut query: Query<&mut DealerHand>){

@@ -1,9 +1,10 @@
 use bevy::prelude::*;
-use crate::game::components::{PlayerButtonValues, Card, Decks, PlayerBalance, PlayerHand, PlayerHands, PlayerName};
+use crate::game::components::{PlayerButtonValues, Card, PlayerBalance, PlayerHand, PlayerHands, PlayerName};
 use crate::game::bundles::PlayerBundle;
 use crate::game::constants::{CARD_HORIZONTAL_SPACING, CARD_VERTICAL_SPACING, NO_CARD_VALUE, PLAYER_CARDS_INITIAL_HORIZONTAL_POSITION, PLAYER_CARDS_INITIAL_VERTICAL_POSITION};
-use crate::game::in_game_systems::{spawn_player_card, spawn_player_card_after_setup};
+use crate::game::in_game_systems::{spawn_player_card};
 use super::components::Deck;
+use super::constants::GameRoundState;
 use super::resources::{BalanceValue, ParentNode};
 use super::traits::{Dealable, Shufflable};
 
@@ -57,6 +58,7 @@ pub fn hit_player_hand(
     mut deck: ResMut<Deck>,
     assets: Res<AssetServer>,
     parent_node: Res<ParentNode>,
+    mut next_state: ResMut<NextState<GameRoundState>>,
     mut player_query: Query<(&mut PlayerHands, &mut PlayerBalance)>,
     mut hit_button_query: Query<(&Button, &mut Interaction, &PlayerButtonValues)>,
 ){    
@@ -89,7 +91,7 @@ pub fn hit_player_hand(
                         });
                         let bust = determine_player_bust(player_hand);
                         if bust{
-                            println!("Player busted");
+                            next_state.set(GameRoundState::RoundEnd);
                         }
                         else {
                             println!("Player has not busted");
@@ -106,7 +108,7 @@ pub fn hit_player_hand(
 }
 
 pub fn stand_player_hand(
-    mut query: Query<(&mut PlayerHands, &mut PlayerBalance)>,
+    mut next_state: ResMut<NextState<GameRoundState>>,
     mut stand_button_query: Query<(&Button, &mut Interaction, &PlayerButtonValues)>,
 ){
 
@@ -115,7 +117,7 @@ pub fn stand_player_hand(
             Interaction::Pressed => {
                 match *value{
                     PlayerButtonValues::Stand => {    
-                        println!("Player Pressed: Stand Button");
+                        next_state.set(GameRoundState::DealerHand);
                         *interaction = Interaction::None;
                     }
                     _ => {}
@@ -185,7 +187,7 @@ pub fn determine_player_bust(player_hand: &mut PlayerHand)-> bool{
             totals.1 += card_total2;
         }
     }
-    if (totals.1 > 21 && totals.0 > 21){
+    if totals.1 > 21 && totals.0 > 21 {
         return true;
     }
     else{

@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-use super::{components::{Card, ChipButtonValue, DealerHand, InGameCardAccess, PlayerBalance, PlayerButtonValues, PlayerHand, PlayerHands, TextComponents}, constants::{CARD_HORIZONTAL_SPACING, CARD_VERTICAL_SPACING, DEALER_CARDS_INITIAL_HORIZONTAL_POSITION, DEALER_CARDS_INITIAL_VERTICAL_POSITION, PLAYER_CARDS_INITIAL_HORIZONTAL_POSITION, PLAYER_CARDS_INITIAL_VERTICAL_POSITION}, player_systems::{double_down_player_hand, hit_player_hand, stand_player_hand}, resources::{BalanceValue, BetValue, ParentNode}};
+use super::{components::{Card, ChipButtonValue, DealerHand, InGameCardAccess, PlayerBalance, PlayerButtonValues, PlayerHand, PlayerHands, TextComponents}, constants::{GameRoundState, CARD_HORIZONTAL_SPACING, CARD_VERTICAL_SPACING, DEALER_CARDS_INITIAL_HORIZONTAL_POSITION, DEALER_CARDS_INITIAL_VERTICAL_POSITION, PLAYER_CARDS_INITIAL_HORIZONTAL_POSITION, PLAYER_CARDS_INITIAL_VERTICAL_POSITION}, player_systems::{double_down_player_hand, hit_player_hand, stand_player_hand}, resources::{BalanceValue, BetValue, ParentNode}};
 
 pub fn in_game_setup(
     mut commands: Commands,
@@ -181,37 +181,6 @@ fn spawn_text_fields(parent: &mut ChildBuilder, assets: &Res<AssetServer>) {
     spawn_text(parent, &assets, Vec2::new(415.0, 15.0), "Dealer", 30.0, TextComponents::NotChanged);
     spawn_text(parent, &assets, Vec2::new(40.0, 200.0), "Please place a bet then hit deal", 30.0, TextComponents::Instruction);
 }
-pub fn spawn_player_card_after_setup(
-    commands: &mut Commands,
-    assets: &Res<AssetServer>,
-    card: &Card,
-    card_index: usize,
-    card_position: Vec2,
-    z_layer: f32,
-) {
-    commands.spawn(ImageBundle {
-            style: Style {
-                width: Val::Px(90.0),
-                height: Val::Px(135.0),
-                position_type: PositionType::Absolute,
-                left: Val::Px(card_position.x),
-                top: Val::Px(card_position.y),
-                ..default()
-            },
-            image: UiImage {
-                texture: assets.load(&card.front_asset_path),
-                ..default()
-            },
-            visibility: Visibility::Visible,
-            transform: Transform {
-                translation: Vec3::new(card_position.x, card_position.y, z_layer), // Z-layer for rendering
-                ..default()
-            },
-            ..default()
-        })
-        .insert(InGameCardAccess::PlayerCard(card_index));
-}
-
 pub fn spawn_player_card(
     parent: &mut ChildBuilder,
     assets: &Res<AssetServer>,
@@ -235,7 +204,7 @@ pub fn spawn_player_card(
         },
         visibility: if is_visible { Visibility::Visible } else { Visibility::Hidden },
         transform: Transform {
-            translation: Vec3::new(card_position.x, card_position.y, card_index as f32 * 0.0001), // Z-layer for rendering
+            translation: Vec3::new(card_position.x, card_position.y, card_index as f32 * 0.0001),
             ..default()
         },
         ..default()
@@ -411,6 +380,7 @@ pub fn chip_button_click_system(
 //dealing with player game button clicks
 
 pub fn player_button_system(
+    mut next_state: ResMut<NextState<GameRoundState>>,
     mut param_set: ParamSet<(
         Query<(&Button, &mut Interaction, &PlayerButtonValues, &mut Visibility), With<Button>>,
         Query<(&InGameCardAccess, &mut Visibility)>,       
@@ -474,5 +444,17 @@ pub fn player_button_system(
                 _ => {}
             } 
         }
+        next_state.set(GameRoundState::PlayerHand);
     }
+}
+
+pub fn track_game_state(game_state: Res<State<GameRoundState>>){
+    let game_state_string = match game_state.get() {
+        GameRoundState::RoundStart => "Round Start",
+        GameRoundState::Betting => "Betting",
+        GameRoundState::PlayerHand => "Player Hand",
+        GameRoundState::DealerHand => "Dealer Hand",
+        GameRoundState::RoundEnd => "Round End",
+    };
+    println!("Game State: {game_state_string}");
 }

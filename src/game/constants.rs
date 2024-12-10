@@ -27,11 +27,8 @@ pub enum DeckState {
 pub enum GameRoundState {
     #[default]
     RoundStart,
-    WaitingForBet,
     Betting,
-    Dealing,
-    WaitingForPlayerAction,
-    PlayerAction,
-    DealerAction,
+    PlayerHand,
+    DealerHand,
     RoundEnd
 }
