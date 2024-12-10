@@ -16,7 +16,7 @@ use components::Deck;
 use constants::{AppState, DeckState};
 
 use in_game_systems::{ chip_button_click_system, player_button_system, in_game_setup, print_all_dealer_cards};
-use resources::{BalanceValue, BetValue};
+use resources::{BalanceValue, BetValue, ParentNode};
 use start_game_systems::start_game;
 use plugins::StartupPlugin;
 use setup::{setup_screen_setup, start_setup};
@@ -51,6 +51,7 @@ pub fn run(){
 	.insert_resource(BetValue { value: 0 })
 	.insert_resource(BalanceValue { value: 1000 })
 	.insert_resource(Deck::default())
+	.insert_resource(ParentNode::default())
 
 	//ingame
 	.add_systems(Update, start_game.in_set(StartGameSystemSet))

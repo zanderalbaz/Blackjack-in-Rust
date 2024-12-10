@@ -1,9 +1,10 @@
 use bevy::prelude::*;
-use super::{components::{Card, ChipButtonValue, DealerHand, InGameCardAccess, PlayerBalance, PlayerButtonValues, PlayerHand, PlayerHands, TextComponents}, constants::{CARD_HORIZONTAL_SPACING, CARD_VERTICAL_SPACING, DEALER_CARDS_INITIAL_HORIZONTAL_POSITION, DEALER_CARDS_INITIAL_VERTICAL_POSITION, PLAYER_CARDS_INITIAL_HORIZONTAL_POSITION, PLAYER_CARDS_INITIAL_VERTICAL_POSITION}, player_systems::{double_down_player_hand, hit_player_hand, stand_player_hand}, resources::{BalanceValue, BetValue}};
+use super::{components::{Card, ChipButtonValue, DealerHand, InGameCardAccess, PlayerBalance, PlayerButtonValues, PlayerHand, PlayerHands, TextComponents}, constants::{CARD_HORIZONTAL_SPACING, CARD_VERTICAL_SPACING, DEALER_CARDS_INITIAL_HORIZONTAL_POSITION, DEALER_CARDS_INITIAL_VERTICAL_POSITION, PLAYER_CARDS_INITIAL_HORIZONTAL_POSITION, PLAYER_CARDS_INITIAL_VERTICAL_POSITION}, player_systems::{double_down_player_hand, hit_player_hand, stand_player_hand}, resources::{BalanceValue, BetValue, ParentNode}};
 
 pub fn in_game_setup(
     mut commands: Commands,
     assets: Res<AssetServer>,
+    mut parent_node: ResMut<ParentNode>,
     player_hands: Query<&PlayerHands>, 
     dealer_hands: Query<&DealerHand>,
     ) {
@@ -11,7 +12,7 @@ pub fn in_game_setup(
     let player_hand = &player_hands.single().0[0]; 
     let dealer_hand = dealer_hands.single();
 
-    commands.spawn(NodeBundle {
+    let parent_entity = commands.spawn(NodeBundle {
         style: Style {
             width: Val::Percent(100.0),
             height: Val::Percent(100.0),
@@ -28,7 +29,11 @@ pub fn in_game_setup(
         spawn_text_fields(parent, &assets);
 
         spawn_cards(parent, &assets, player_hand, dealer_hand);
-    });
+    })
+    .id();
+    parent_node.0 = parent_entity;
+
+
 }
 
 //UI component functions below ----------------
@@ -184,8 +189,7 @@ pub fn spawn_player_card_after_setup(
     card_position: Vec2,
     z_layer: f32,
 ) {
-    commands
-        .spawn(ImageBundle {
+    commands.spawn(ImageBundle {
             style: Style {
                 width: Val::Px(90.0),
                 height: Val::Px(135.0),
@@ -208,12 +212,13 @@ pub fn spawn_player_card_after_setup(
         .insert(InGameCardAccess::PlayerCard(card_index));
 }
 
-fn spawn_player_card(
+pub fn spawn_player_card(
     parent: &mut ChildBuilder,
     assets: &Res<AssetServer>,
     card: &Card,
     card_index: usize,
-    card_position: Vec2
+    card_position: Vec2,
+    is_visible: bool
 ) {
     parent.spawn(ImageBundle {
         style: Style {
@@ -228,7 +233,11 @@ fn spawn_player_card(
             texture: assets.load(&card.front_asset_path),
             ..default()
         },
-        visibility: Visibility::Hidden,
+        visibility: if is_visible { Visibility::Visible } else { Visibility::Hidden },
+        transform: Transform {
+            translation: Vec3::new(card_position.x, card_position.y, card_index as f32 * 0.0001), // Z-layer for rendering
+            ..default()
+        },
         ..default()
     })
     .insert(InGameCardAccess::PlayerCard(card_index));
@@ -244,6 +253,7 @@ fn spawn_player_cards(parent: &mut ChildBuilder, assets: &Res<AssetServer>, play
             Vec2 {
                 x: PLAYER_CARDS_INITIAL_HORIZONTAL_POSITION + (i as f32)*CARD_HORIZONTAL_SPACING,
                 y: PLAYER_CARDS_INITIAL_VERTICAL_POSITION  + (i as f32)*CARD_VERTICAL_SPACING}, 
+            false
         );
     }
 }

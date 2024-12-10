@@ -1,10 +1,10 @@
 use bevy::prelude::*;
 use crate::game::components::{PlayerButtonValues, Card, Decks, PlayerBalance, PlayerHand, PlayerHands, PlayerName};
 use crate::game::bundles::PlayerBundle;
-use crate::game::constants::{PLAYER_CARDS_INITIAL_HORIZONTAL_POSITION, PLAYER_CARDS_INITIAL_VERTICAL_POSITION, CARD_HORIZONTAL_SPACING, CARD_VERTICAL_SPACING};
-use crate::game::in_game_systems::spawn_player_card_after_setup;
+use crate::game::constants::{CARD_HORIZONTAL_SPACING, CARD_VERTICAL_SPACING, NO_CARD_VALUE, PLAYER_CARDS_INITIAL_HORIZONTAL_POSITION, PLAYER_CARDS_INITIAL_VERTICAL_POSITION};
+use crate::game::in_game_systems::{spawn_player_card, spawn_player_card_after_setup};
 use super::components::Deck;
-use super::resources::{BalanceValue};
+use super::resources::{BalanceValue, ParentNode};
 use super::traits::{Dealable, Shufflable};
 
 pub fn initial_shuffle(mut deck: ResMut<Deck>) {
@@ -56,12 +56,10 @@ pub fn hit_player_hand(
     mut commands: Commands,
     mut deck: ResMut<Deck>,
     assets: Res<AssetServer>,
+    parent_node: Res<ParentNode>,
     mut player_query: Query<(&mut PlayerHands, &mut PlayerBalance)>,
     mut hit_button_query: Query<(&Button, &mut Interaction, &PlayerButtonValues)>,
-){
-    // println!("hello from hit");
-    
-    //TODO: figure out how to select the correct hand
+){    
     for (_, mut interaction, value) in hit_button_query.iter_mut(){
         match *interaction{
             Interaction::Pressed => {
@@ -82,15 +80,24 @@ pub fn hit_player_hand(
                         //Tried:
                         //(1) Editing in_game_setup to not spawn cards as children -- This breaks the add_system command for in_game_setup
                         //(2) Changing the z-index of the in_game_setup cards to be less than the newly spawned card -- This does not fix the issue
-                        spawn_player_card_after_setup(
-                            &mut commands, 
-                            &assets, 
-                            &card_to_insert, 
-                            insert_index, 
-                            position,
-                            insert_index as f32 + 100.0,
-                        );
-                    
+                        //(3) Creating a resource for the Parent entity in in_game_setup to spawn new children from -- I cannot get this to work
+                        commands.entity(parent_node.0).with_children(|parent|{
+                            spawn_player_card(
+                                parent,
+                                &assets, 
+                                &card_to_insert, 
+                                insert_index, 
+                                position,
+                                true,
+                            );
+                        });
+                        let bust = determine_player_bust(player_hand);
+                        if bust{
+                            println!("Player busted");
+                        }
+                        else {
+                            println!("Player has not busted");
+                        }
                         *interaction = Interaction::None;
                     }
                     _ => {}
@@ -145,3 +152,23 @@ pub fn test_player_balance_change(mut query: Query<&mut PlayerBalance>){
     }
 }
 
+pub fn determine_player_bust(player_hand: &mut PlayerHand)-> bool{
+    let mut totals: (u8, u8) = (0,0);
+    for card in &player_hand.cards{
+        let (card_total1, card_total2) = card.value;
+        totals.0 += card_total1;
+        if card_total2 == NO_CARD_VALUE{
+            totals.1 += card_total1;
+        }
+        else {
+            totals.1 += card_total2;
+        }
+    }
+    if (totals.1 > 21 && totals.0 > 21){
+        return true;
+    }
+    else{
+        return false;
+    }
+
+}

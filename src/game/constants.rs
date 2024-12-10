@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-pub static NO_CARD_VALUE: u8 = u8::MAX;
+pub static NO_CARD_VALUE: u8 = 0;
 pub static CARD_HORIZONTAL_SPACING: f32 = 15.;
 pub static CARD_VERTICAL_SPACING: f32 = 15.;
 pub static DEALER_CARDS_INITIAL_HORIZONTAL_POSITION: f32 = 400.;
