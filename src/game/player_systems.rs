@@ -76,11 +76,7 @@ pub fn hit_player_hand(
                             y: PLAYER_CARDS_INITIAL_VERTICAL_POSITION  + (insert_index as f32)*CARD_VERTICAL_SPACING};
                         
                         println!("Inserting card: {} of {} into player hand at index {}",   player_hand.cards[insert_index].face, player_hand.cards[insert_index].suite, insert_index);
-                        //Changing the z-index does not spawn the card on top of the other cards.
-                        //Tried:
-                        //(1) Editing in_game_setup to not spawn cards as children -- This breaks the add_system command for in_game_setup
-                        //(2) Changing the z-index of the in_game_setup cards to be less than the newly spawned card -- This does not fix the issue
-                        //(3) Creating a resource for the Parent entity in in_game_setup to spawn new children from -- I cannot get this to work
+                        
                         commands.entity(parent_node.0).with_children(|parent|{
                             spawn_player_card(
                                 parent,
@@ -107,24 +103,49 @@ pub fn hit_player_hand(
         }
     }
 
-    //     //check for hand bust (over 21)
 }
 
-pub fn stand_player_hand(mut query: Query<(&mut PlayerHand, &mut PlayerBalance)>){
+pub fn stand_player_hand(
+    mut query: Query<(&mut PlayerHands, &mut PlayerBalance)>,
+    mut stand_button_query: Query<(&Button, &mut Interaction, &PlayerButtonValues)>,
+){
 
-    println!("hello from stand");
-
-    //TODO: figure out how to select the correct hand
+    for (_, mut interaction, value) in stand_button_query.iter_mut(){
+        match *interaction{
+            Interaction::Pressed => {
+                match *value{
+                    PlayerButtonValues::Stand => {    
+                        println!("Player Pressed: Stand Button");
+                        *interaction = Interaction::None;
+                    }
+                    _ => {}
+                }
+            }
+            _ => {}
+        }
+    }
     
-    //implement some sort of current hand state.
     //end current hand and move to the next hand (dealer or player's next hand)
 }
 
-pub fn double_down_player_hand(mut query: Query<(&mut PlayerHand, &mut PlayerBalance)>){
-    
-    println!("hello from double down");
-    //TODO: figure out how to select the correct hand
-    
+pub fn double_down_player_hand(
+    mut query: Query<(&mut PlayerHands, &mut PlayerBalance)>,
+    mut double_down_button_query: Query<(&Button, &mut Interaction, &PlayerButtonValues)>,
+){
+    for (_, mut interaction, value) in double_down_button_query.iter_mut(){
+        match *interaction{
+            Interaction::Pressed => {
+                match *value{
+                    PlayerButtonValues::DoubleDown => {    
+                        println!("Player Pressed: Double Down Button");
+                        *interaction = Interaction::None;
+                    }
+                    _ => {}
+                }
+            }
+            _ => {}
+        }
+    }    
     //check if player has enough balance to double down on this hand
     //yes?
         //update balance

@@ -411,12 +411,6 @@ pub fn chip_button_click_system(
 //dealing with player game button clicks
 
 pub fn player_button_system(
-    // commands: &mut Commands,
-    // assets: &Res<AssetServer>,
-    mut player_query: Query<(&mut PlayerHand, &mut PlayerBalance)>,
-    mut dealer_query: Query<&mut DealerHand>,
-    mut bet_value: ResMut<BetValue>, 
-    mut player_balance_result: ResMut<BalanceValue>, 
     mut param_set: ParamSet<(
         Query<(&Button, &mut Interaction, &PlayerButtonValues, &mut Visibility), With<Button>>,
         Query<(&InGameCardAccess, &mut Visibility)>,       
@@ -424,27 +418,12 @@ pub fn player_button_system(
         Query<(&ChipButtonValue, &mut Visibility)>  
     )>,  
 ) {
-    let mut hit_button_pressed = false;
-    let mut stand_button_pressed = false;
-    let mut double_button_pressed = false;
     let mut deal_button_pressed = false;
     
     for (_, mut interaction, value, _) in param_set.p0().iter_mut() {
         match *interaction {
             Interaction::Pressed => {
                 match *value {
-                    PlayerButtonValues::Stand => {
-                        stand_button_pressed = true;
-                        *interaction = Interaction::None;
-                    },
-                    PlayerButtonValues::Hit => {
-                        // hit_button_pressed = true;
-                        // *interaction = Interaction::None; 
-                    },
-                    PlayerButtonValues::DoubleDown => {
-                        double_button_pressed = true;
-                        *interaction = Interaction::None;
-                    },
                     PlayerButtonValues::Home => {
                         println!("Home");
                         *interaction = Interaction::None;
@@ -453,6 +432,7 @@ pub fn player_button_system(
                         deal_button_pressed = true;
                         *interaction = Interaction::None;
                     },   
+                    _ => {}
                 }
             }
             _ => {}
@@ -495,15 +475,4 @@ pub fn player_button_system(
             } 
         }
     }
-    else if stand_button_pressed {
-        stand_player_hand(player_query);
-    }
-    else if hit_button_pressed {
-        println!("player_button_hit_pressed");
-        // hit_player_hand(commands, assets, player_query);
-    }
-    else if double_button_pressed {
-        double_down_player_hand(player_query);
-    }
-    
 }

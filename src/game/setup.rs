@@ -10,40 +10,39 @@ pub fn start_setup(
         commands.spawn(Camera2dBundle::default());
         commands.spawn((
             SpriteBundle{
-                texture: asset_server.load("background.png"), //automatically looks in assets folder
+                texture: asset_server.load("background.png"), 
                 sprite: Sprite {
                     custom_size: Some(Vec2::new(800., 500.)),
                     ..default()
                 },
-                transform: Transform::from_xyz(0.0, 0.0, 0.0), //this determines the position of the sprite
+                transform: Transform::from_xyz(0.0, 0.0, 0.0), 
                 ..default()
             },
             Background,
         ));
         commands.spawn((
             SpriteBundle{
-                texture: asset_server.load("game_title.png"), //automatically looks in assets folder
+                texture: asset_server.load("game_title.png"), 
                 sprite: Sprite {
                     ..default()
                 },
-                transform: Transform::from_xyz(0.0, 0.0, 1.0), //this determines the position of the sprite
+                transform: Transform::from_xyz(0.0, 0.0, 1.0), 
                 ..default()
             },
             Logo,
         ));
         commands.spawn((
             SpriteBundle{
-                texture: asset_server.load("press_enter_to_play.png"), //automatically looks in assets folder
+                texture: asset_server.load("press_enter_to_play.png"), 
                 sprite: Sprite {
                     custom_size: Some(Vec2::new(400., 50.)),
                     ..default()
                 },
-                transform: Transform::from_xyz(0.0, -150.0, 2.0), //this determines the position of the sprite
+                transform: Transform::from_xyz(0.0, -150.0, 2.0), 
                 ..default()
             },
             PressEnterToPlay,
         ));
-        println!("Setup function ran");
 
 }
 
