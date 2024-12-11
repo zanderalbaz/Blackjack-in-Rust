@@ -145,12 +145,11 @@ pub fn play_dealer_hand(
             //Maybe add a small delay here
         }
         next_state.set(GameRoundState::RoundEnd);
+
+        //This should Likely be put in another function
+        //i.e. determine_win or something
         if totals.1 > 21 && totals.0 > 21 {
             println!("Dealer Bust: Player Win!");
         }
     }
-}
-
-pub fn stand_dealer_hand(mut query: Query<(&mut DealerHand, &mut PlayerHands)>){    
-    //end current hand and calculate win
 }
