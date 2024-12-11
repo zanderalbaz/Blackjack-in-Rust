@@ -232,12 +232,7 @@ pub fn determine_player_bust(player_hand: &mut PlayerHand)-> bool{
     for card in &player_hand.cards{
         let (card_total1, card_total2) = card.value;
         totals.0 += card_total1;
-        if card_total2 == NO_CARD_VALUE{
-            totals.1 += card_total1;
-        }
-        else {
-            totals.1 += card_total2;
-        }
+        totals.1 += card_total2;
     }
     if totals.1 > 21 && totals.0 > 21 {
         return true;

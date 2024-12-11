@@ -1,7 +1,6 @@
 use bevy::prelude::*;
 use rand::Rng;
 
-use super::constants;
 use crate::game::traits::{Shufflable, Dealable};
 
 // start screen ---------------
@@ -119,18 +118,18 @@ impl Default for Deck {
             ];
         let face_values = [
             (String::from("ace"), (1,11)),
-            (String::from("2"), (2,constants::NO_CARD_VALUE)),
-            (String::from("3"), (3,constants::NO_CARD_VALUE)),
-            (String::from("4"), (4,constants::NO_CARD_VALUE)),
-            (String::from("5"), (5,constants::NO_CARD_VALUE)),
-            (String::from("6"), (6,constants::NO_CARD_VALUE)),
-            (String::from("7"), (7,constants::NO_CARD_VALUE)),
-            (String::from("8"), (8,constants::NO_CARD_VALUE)),
-            (String::from("9"), (9,constants::NO_CARD_VALUE)),
-            (String::from("10"), (10,constants::NO_CARD_VALUE)),
-            (String::from("jack"), (10,constants::NO_CARD_VALUE)),
-            (String::from("queen"), (10,constants::NO_CARD_VALUE)),
-            (String::from("king"), (10,constants::NO_CARD_VALUE)),
+            (String::from("2"), (2,2)),
+            (String::from("3"), (3,3)),
+            (String::from("4"), (4,4)),
+            (String::from("5"), (5,5)),
+            (String::from("6"), (6,6)),
+            (String::from("7"), (7,7)),
+            (String::from("8"), (8,8)),
+            (String::from("9"), (9,9)),
+            (String::from("10"), (10,10)),
+            (String::from("jack"), (10,10)),
+            (String::from("queen"), (10,10)),
+            (String::from("king"), (10,10)),
             ];
 
         for suite in &suites{

@@ -21,7 +21,7 @@ use start_game_systems::start_game;
 use plugins::StartupPlugin;
 use setup::{setup_screen_setup, start_setup};
 use player_systems::{hit_player_hand, stand_player_hand, double_down_player_hand,  initial_shuffle, spawn_player, spawn_test_player, test_player_balance_change, test_player_hand};
-use dealer_systems::{reveal_dealer_hand, shuffle_dealer_decks, spawn_dealer, spawn_test_dealer, test_dealer_decks, test_dealer_hand};
+use dealer_systems::{play_dealer_hand, reveal_dealer_hand, shuffle_dealer_decks, spawn_dealer, spawn_test_dealer, test_dealer_decks, test_dealer_hand};
 
 #[derive(SystemSet, Debug, Hash, PartialEq, Eq, Clone)]
 pub struct StartGameSystemSet;
@@ -68,6 +68,8 @@ pub fn run(){
 	.add_systems(Update, hit_player_hand.in_set(PlayerGameplaySet).run_if(in_state(AppState::InGame)))
 	.add_systems(Update, stand_player_hand.in_set(PlayerGameplaySet).run_if(in_state(AppState::InGame)))
 	.add_systems(Update, double_down_player_hand.in_set(PlayerGameplaySet).run_if(in_state(AppState::InGame)))
+
+	.add_systems(OnEnter(GameRoundState::DealerHand), play_dealer_hand)
 
 	.add_systems(OnEnter(GameRoundState::PlayerHand), track_game_state)
 	.add_systems(OnEnter(GameRoundState::DealerHand), track_game_state)

@@ -1,9 +1,12 @@
 use bevy::prelude::*;
 use crate::game::components::{Decks, DealerHand, Card, PlayerHands};
 use crate::game::bundles::DealerBundle;
-use crate::game::constants::DeckState;
+use crate::game::constants::{DeckState, NO_CARD_VALUE};
 
 use super::components::{Deck, InGameCardAccess};
+use super::constants::{GameRoundState, CARD_HORIZONTAL_SPACING, CARD_VERTICAL_SPACING, DEALER_CARDS_INITIAL_HORIZONTAL_POSITION, DEALER_CARDS_INITIAL_VERTICAL_POSITION};
+use super::in_game_systems::spawn_dealer_card;
+use super::resources::ParentNode;
 use super::traits::{Dealable, Shufflable};
 
 pub fn spawn_dealer(mut commands: Commands, mut deck: ResMut<Deck>){
@@ -102,10 +105,49 @@ pub fn reveal_dealer_hand(
     }
 }
 
-pub fn hit_dealer_hand(mut query: Query<&mut DealerHand>){
-    for dealer_hand in &mut query{
-        //add a card to dealer hand
-        //check for hand bust (over 21)
+pub fn play_dealer_hand(
+    mut commands: Commands,
+    mut deck: ResMut<Deck>,
+    assets: Res<AssetServer>, 
+    parent_node: Res<ParentNode>,
+    mut next_state: ResMut<NextState<GameRoundState>>,
+    mut query: Query<&mut DealerHand>
+){
+    for mut dealer_hand in &mut query{
+        let mut totals: (u8, u8) = (0,0);
+    for card in &dealer_hand.cards{
+        let (card_total1, card_total2) = card.value;
+        totals.0 += card_total1;
+        totals.1 += card_total2;
+    }
+        //Hit on soft 17
+        while totals.0 < 17 || totals.1 < 18 {
+            let insert_index = dealer_hand.cards.len();
+            let card_to_insert = deck.deal();
+            dealer_hand.cards.push(card_to_insert.clone());
+            let position = Vec2 {
+                x: DEALER_CARDS_INITIAL_HORIZONTAL_POSITION + (insert_index as f32)*CARD_HORIZONTAL_SPACING,
+                y: DEALER_CARDS_INITIAL_VERTICAL_POSITION  + (insert_index as f32)*CARD_VERTICAL_SPACING};
+                commands.entity(parent_node.0).with_children(|parent|{
+                    spawn_dealer_card(
+                        parent,
+                        &assets, 
+                        &card_to_insert, 
+                        insert_index, 
+                        position,
+                        true,
+                        true
+                    );
+                });
+            let (card_value1, card_value2) = card_to_insert.value;
+            totals.0 += card_value1;
+            totals.1 += card_value2;
+            //Maybe add a small delay here
+        }
+        next_state.set(GameRoundState::RoundEnd);
+        if totals.1 > 21 && totals.0 > 21 {
+            println!("Dealer Bust: Player Win!");
+        }
     }
 }
 

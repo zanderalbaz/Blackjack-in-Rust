@@ -227,13 +227,14 @@ fn spawn_player_cards(parent: &mut ChildBuilder, assets: &Res<AssetServer>, play
     }
 }
 
-fn spawn_dealer_card(
+pub fn spawn_dealer_card(
     parent: &mut ChildBuilder, 
     assets: &Res<AssetServer>, 
     card: &Card,
     card_index: usize, 
     card_position: Vec2,
-    load_front_asset: bool){
+    load_front_asset: bool,
+    is_visible: bool){
     // println!("running spawn_dealer_card for {} of {} with asset: {} at position: {}", card.face, card.suite, card.front_asset_path, card_index);
     parent.spawn(ImageBundle {
         style: Style {
@@ -249,7 +250,7 @@ fn spawn_dealer_card(
             ..default()
         },
         
-        visibility: Visibility::Hidden,
+        visibility: if is_visible {Visibility::Visible} else{Visibility::Hidden},
         ..default()
     })
     .insert(InGameCardAccess::DealerCard(card_index));
@@ -266,6 +267,7 @@ fn spawn_dealer_cards(parent: &mut ChildBuilder, assets: &Res<AssetServer>, deal
                     Vec2 {
                         x: DEALER_CARDS_INITIAL_HORIZONTAL_POSITION + (i as f32)*CARD_HORIZONTAL_SPACING,
                         y: DEALER_CARDS_INITIAL_VERTICAL_POSITION + (i as f32)*CARD_VERTICAL_SPACING }, 
+                    false,
                     false
                 );
             }
@@ -278,7 +280,8 @@ fn spawn_dealer_cards(parent: &mut ChildBuilder, assets: &Res<AssetServer>, deal
                     Vec2 { 
                         x: DEALER_CARDS_INITIAL_HORIZONTAL_POSITION + (i as f32)*CARD_HORIZONTAL_SPACING,
                         y: DEALER_CARDS_INITIAL_VERTICAL_POSITION  + (i as f32)*CARD_VERTICAL_SPACING},
-                    true);
+                    true,
+                false);
             }
     }
 }
