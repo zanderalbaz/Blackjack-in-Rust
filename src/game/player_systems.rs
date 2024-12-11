@@ -3,9 +3,9 @@ use crate::game::components::{PlayerButtonValues, Card, PlayerBalance, PlayerHan
 use crate::game::bundles::PlayerBundle;
 use crate::game::constants::{CARD_HORIZONTAL_SPACING, CARD_VERTICAL_SPACING, NO_CARD_VALUE, PLAYER_CARDS_INITIAL_HORIZONTAL_POSITION, PLAYER_CARDS_INITIAL_VERTICAL_POSITION};
 use crate::game::in_game_systems::{spawn_player_card};
-use super::components::Deck;
+use super::components::{Deck, TextComponents};
 use super::constants::GameRoundState;
-use super::resources::{BalanceValue, ParentNode};
+use super::resources::{BalanceValue, BetValue, ParentNode};
 use super::traits::{Dealable, Shufflable};
 
 pub fn initial_shuffle(mut deck: ResMut<Deck>) {
@@ -67,7 +67,6 @@ pub fn hit_player_hand(
             Interaction::Pressed => {
                 match *value{
                     PlayerButtonValues::Hit => {    
-                        *interaction = Interaction::None;
                         let (mut player_hands, _) = player_query.single_mut(); 
                         let player_hand = &mut player_hands.0[0];
                         let insert_index = player_hand.cards.len();
@@ -77,7 +76,7 @@ pub fn hit_player_hand(
                             x: PLAYER_CARDS_INITIAL_HORIZONTAL_POSITION + (insert_index as f32)*CARD_HORIZONTAL_SPACING,
                             y: PLAYER_CARDS_INITIAL_VERTICAL_POSITION  + (insert_index as f32)*CARD_VERTICAL_SPACING};
                         
-                        println!("Inserting card: {} of {} into player hand at index {}",   player_hand.cards[insert_index].face, player_hand.cards[insert_index].suite, insert_index);
+                        // println!("Inserting card: {} of {} into player hand at index {}",   player_hand.cards[insert_index].face, player_hand.cards[insert_index].suite, insert_index);
                         
                         commands.entity(parent_node.0).with_children(|parent|{
                             spawn_player_card(
@@ -92,9 +91,6 @@ pub fn hit_player_hand(
                         let bust = determine_player_bust(player_hand);
                         if bust{
                             next_state.set(GameRoundState::RoundEnd);
-                        }
-                        else {
-                            println!("Player has not busted");
                         }
                         *interaction = Interaction::None;
                     }
@@ -125,13 +121,19 @@ pub fn stand_player_hand(
             }
             _ => {}
         }
-    }
-    
-    //end current hand and move to the next hand (dealer or player's next hand)
+    }    
 }
 
 pub fn double_down_player_hand(
-    mut query: Query<(&mut PlayerHands, &mut PlayerBalance)>,
+    mut commands: Commands,
+    mut bet_value: ResMut<BetValue>,
+    mut balance_value: ResMut<BalanceValue>,
+    mut deck: ResMut<Deck>,
+    assets: Res<AssetServer>,
+    parent_node: Res<ParentNode>,
+    mut next_state: ResMut<NextState<GameRoundState>>,
+    mut text_query: Query<(&TextComponents, &mut Text)>,
+    mut player_query: Query<(&mut PlayerHands, &mut PlayerBalance)>,
     mut double_down_button_query: Query<(&Button, &mut Interaction, &PlayerButtonValues)>,
 ){
     for (_, mut interaction, value) in double_down_button_query.iter_mut(){
@@ -139,7 +141,57 @@ pub fn double_down_player_hand(
             Interaction::Pressed => {
                 match *value{
                     PlayerButtonValues::DoubleDown => {    
-                        println!("Player Pressed: Double Down Button");
+                        //Check player balance:
+                        let balance = balance_value.value;
+                        let bet = bet_value.value;
+                        if balance < bet {
+                            *interaction = Interaction::None;
+                            println!("Insufficient balance to double down");
+                            return;
+                        }
+                        else {
+                            let new_bet_text = (bet*2).to_string();
+                            let new_balance_text = (balance-bet).to_string();
+                            balance_value.value -= bet_value.value;
+                            bet_value.value = bet_value.value*2;
+                            for (text_component, mut text) in text_query.iter_mut() {
+                                if let TextComponents::Bet = text_component {
+                                    text.sections[0].value = new_bet_text.clone(); 
+                                }
+                    
+                                if let TextComponents::Balance = text_component {
+                                    text.sections[0].value = new_balance_text.clone();
+                                }
+                            }
+                    
+                        }
+                        //Player balance is valid
+                        let (mut player_hands, _) = player_query.single_mut(); 
+                        let player_hand = &mut player_hands.0[0];
+                        let insert_index = player_hand.cards.len();
+                        let card_to_insert = deck.deal();
+                        player_hand.cards.push(card_to_insert.clone());
+                        let position = Vec2 {
+                            x: PLAYER_CARDS_INITIAL_HORIZONTAL_POSITION + (insert_index as f32)*CARD_HORIZONTAL_SPACING,
+                            y: PLAYER_CARDS_INITIAL_VERTICAL_POSITION  + (insert_index as f32)*CARD_VERTICAL_SPACING};
+                        commands.entity(parent_node.0).with_children(|parent|{
+                            spawn_player_card(
+                                parent,
+                                &assets, 
+                                &card_to_insert, 
+                                insert_index, 
+                                position,
+                                true,
+                            );
+                        });
+                        
+                        let bust = determine_player_bust(player_hand);
+                        if bust{
+                            next_state.set(GameRoundState::RoundEnd);
+                        }
+                        else {
+                            next_state.set(GameRoundState::DealerHand);
+                        }
                         *interaction = Interaction::None;
                     }
                     _ => {}
