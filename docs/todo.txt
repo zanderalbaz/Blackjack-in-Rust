@@ -4,19 +4,30 @@ TODO:
 
 PRIORITY:
 
-[X] logic to make it so that one dealer card is down and one shown until the right time 
-[X] start to implement dealer and player logic functions (hit, stand, doouble down)
-[X] when hit is called spawn a third card and shift positions
-[X] error check deal button so that when bet placed == 0 , prompts you to make bet of at least 1
 - implement home button that wipes game and restarts and goes to home
 - maybe a text for how much you won/lost 
 - refactor code to fit the state-driven architecture (see constants.rs: GameRoundState; game.rs; for references)
 - figure out how to reset round
 - implement determine_win function
+
+- figure out how to go to betting state once round ends 
+- figure out how to transition from round end - rund start 
+- updating balances and win determination
+
 Lower priority: 
 - maybe a restart button that just resets the game 
 - maybe a minus or undo button to subtract from bet amount or something similar 
 - add a delay for each card when playing out the dealer hand
+
+
+tests for button clicks, game state for different actions, if you bust, test we go to round end
+deal test to go to playing
+
+unit tests....
+test 
+
+write one for a system using logic on entities 
+test something really small using only one entity
 
  
 GENERAL:
@@ -28,15 +39,19 @@ GENERAL:
 	- int Funds X
 	- play functions(check, hit, etc)
 
-- Setup Dealer 
-	- Vector<Cards[]> Decks X
-	- functions (shuffle, hit) X 
-
-- Setup Game Logic
 
 
 
 completed:
+
+- Setup Dealer 
+	- Vector<Cards[]> Decks X
+	- functions (shuffle, hit) X 
+
+[X] logic to make it so that one dealer card is down and one shown until the right time 
+[X] start to implement dealer and player logic functions (hit, stand, doouble down)
+[X] when hit is called spawn a third card and shift positions
+[X] error check deal button so that when bet placed == 0 , prompts you to make bet of at least 1
 
 - when hand is spawned for player, need to somehow connect those image_paths [X]
 - update value of bet [X]
