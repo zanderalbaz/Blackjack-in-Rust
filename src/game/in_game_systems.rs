@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-use super::{components::{Card, ChipButtonValue, DealerHand, InGameCardAccess, PlayerBalance, PlayerButtonValues, PlayerHand, PlayerHands, TextComponents}, constants::{GameRoundState, CARD_HORIZONTAL_SPACING, CARD_VERTICAL_SPACING, DEALER_CARDS_INITIAL_HORIZONTAL_POSITION, DEALER_CARDS_INITIAL_VERTICAL_POSITION, PLAYER_CARDS_INITIAL_HORIZONTAL_POSITION, PLAYER_CARDS_INITIAL_VERTICAL_POSITION}, player_systems::{double_down_player_hand, hit_player_hand, stand_player_hand}, resources::{BalanceValue, BetValue, ParentNode}};
+use super::{components::{Card, ChipButtonValue, DealerHand, InGameCardAccess, PlayerBalance, PlayerButtonValues, PlayerHand, PlayerHands, TextComponents}, constants::{AppState, GameRoundState, CARD_HORIZONTAL_SPACING, CARD_VERTICAL_SPACING, DEALER_CARDS_INITIAL_HORIZONTAL_POSITION, DEALER_CARDS_INITIAL_VERTICAL_POSITION, PLAYER_CARDS_INITIAL_HORIZONTAL_POSITION, PLAYER_CARDS_INITIAL_VERTICAL_POSITION}, player_systems::{double_down_player_hand, hit_player_hand, stand_player_hand}, resources::{BalanceValue, BetValue, ParentNode}};
 
 pub fn in_game_setup(
     mut commands: Commands,
@@ -66,6 +66,7 @@ fn spawn_image_button(
             style: Style {
                 width: Val::Px(90.0),
                 height: Val::Px(90.0),
+                
                 ..default()
             },
             image: UiImage {
@@ -144,7 +145,7 @@ fn spawn_buttons(parent: &mut ChildBuilder, assets: &Res<AssetServer>) {
         };
 
         button_bundle.visibility = match button_value {
-            // PlayerButtonValues::Deal => Visibility::Visible,
+            PlayerButtonValues::Home => Visibility::Visible,
             _ => Visibility::Hidden,
         };
 
@@ -384,12 +385,15 @@ pub fn chip_button_click_system(
 
 pub fn player_button_system(
     mut next_state: ResMut<NextState<GameRoundState>>,
+    mut next_app_state: ResMut<NextState<AppState>>,
     mut param_set: ParamSet<(
         Query<(&Button, &mut Interaction, &PlayerButtonValues, &mut Visibility), With<Button>>,
         Query<(&InGameCardAccess, &mut Visibility)>,       
         Query<(&TextComponents, &mut Visibility)>,      
         Query<(&ChipButtonValue, &mut Visibility)>  
-    )>,  
+    )>,
+    mut balance_value: ResMut<BalanceValue>,
+    mut bet_value: ResMut<BetValue>,  
 ) {
     let mut deal_button_pressed = false;
     
@@ -399,7 +403,13 @@ pub fn player_button_system(
                 match *value {
                     PlayerButtonValues::Home => {
                         println!("Home");
+                        reset(&mut balance_value, &mut bet_value );
+                        next_app_state.set(AppState::Start);
+                        //track_app_state(current_app_state);
+                        //println!("{}", AppState)
+
                         *interaction = Interaction::None;
+                        
                     },
                     PlayerButtonValues::Deal => {
                         deal_button_pressed = true;
@@ -460,4 +470,18 @@ pub fn track_game_state(game_state: Res<State<GameRoundState>>){
         GameRoundState::RoundEnd => "Round End",
     };
     println!("Game State: {game_state_string}");
+}
+
+pub fn track_app_state(current_app_state: Res<State<AppState>>) {
+    let app_state_string = match current_app_state.get(){
+        AppState::Start => "Start",
+        AppState::InGame => "In Game",
+    };
+    println!("Current app state: {app_state_string}");
+}
+
+pub fn reset(balance_value: &mut ResMut<BalanceValue>, bet_value: &mut ResMut<BetValue>) {
+    balance_value.value = 1000;  
+    bet_value.value = 0;         
+    println!("Player balance reset to 1000 and bet reset to 0");
 }
