@@ -72,6 +72,8 @@ pub fn run() {
         .add_systems(OnEnter(GameRoundState::RoundEnd), track_game_state)
         .add_systems(OnEnter(GameRoundState::RoundStart), track_game_state)
         .add_systems(OnEnter(GameRoundState::Betting), track_game_state)
+
+        //.add_systems(OnEnter(GameRoundState::RoundEnd), despawn_cards)
         
         // Track app states on entry
         .add_systems(OnEnter(AppState::Start), track_app_state)

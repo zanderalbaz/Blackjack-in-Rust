@@ -9,8 +9,22 @@ pub fn in_game_setup(
     dealer_hands: Query<&DealerHand>,
     ) {
     
-    let player_hand = &player_hands.single().0[0]; 
-    let dealer_hand = dealer_hands.single();
+        let player_hand = match player_hands.get_single() {
+            Ok(player_hands) => &player_hands.0[0], // Assuming player hands exist
+            Err(_) => {
+                println!("No player hands found, aborting setup");
+                return;
+            }
+        };
+    
+        // Safely fetch dealer hand
+        let dealer_hand = match dealer_hands.get_single() {
+            Ok(dealer_hand) => dealer_hand,
+            Err(_) => {
+                println!("No dealer hands found, aborting setup");
+                return;
+            }
+        };
 
     let parent_entity = commands.spawn(NodeBundle {
         style: Style {
@@ -394,6 +408,7 @@ pub fn player_button_system(
     )>,
     mut balance_value: ResMut<BalanceValue>,
     mut bet_value: ResMut<BetValue>,  
+    mut commands: Commands,
 ) {
     let mut deal_button_pressed = false;
     
@@ -422,6 +437,7 @@ pub fn player_button_system(
     }
 
     if deal_button_pressed {
+
         for (_, _, value,  mut visibility) in param_set.p0().iter_mut() {
             match *value {
                 PlayerButtonValues::Deal => {
@@ -497,3 +513,24 @@ pub fn reset(balance_value: &mut ResMut<BalanceValue>, bet_value: &mut ResMut<Be
     bet_value.value = 0;         
     println!("Player balance reset to 1000 and bet reset to 0");
 }
+
+// pub fn despawn_cards(
+//     game_round_state: Res<State<GameRoundState>>,
+//     mut commands: Commands,
+//     player_query: Query<Entity, With<PlayerHand>>,
+//     dealer_query: Query<Entity, With<DealerHand>>,
+// ) {
+
+//     if *game_round_state == GameRoundState::RoundEnd {
+        
+//         // Despawn all player hand entities (cards)
+//         for entity in player_query.iter() {
+//             commands.entity(entity).despawn();
+//         }
+
+//         // Despawn all dealer hand entities (cards)
+//         for entity in dealer_query.iter() {
+//             commands.entity(entity).despawn();
+//         }
+//     }
+// }

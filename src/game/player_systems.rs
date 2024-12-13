@@ -3,9 +3,9 @@ use crate::game::components::{PlayerButtonValues, Card, PlayerBalance, PlayerHan
 use crate::game::bundles::PlayerBundle;
 use crate::game::constants::{CARD_HORIZONTAL_SPACING, CARD_VERTICAL_SPACING, NO_CARD_VALUE, PLAYER_CARDS_INITIAL_HORIZONTAL_POSITION, PLAYER_CARDS_INITIAL_VERTICAL_POSITION};
 use crate::game::in_game_systems::{spawn_player_card};
-use super::components::{DealerHand, Deck, Hand, TextComponents};
+use super::components::{DealerHand, Deck, TextComponents};
 use super::constants::GameRoundState;
-use super::in_game_systems::spawn_result_text;
+use super::in_game_systems::{spawn_result_text};
 use super::resources::{BalanceValue, BetValue, ParentNode};
 use super::traits::{Dealable, Shufflable};
 
@@ -106,6 +106,7 @@ pub fn hit_player_hand(
                             balance.value += -bet_amount.value;
                             bet_amount.value = 0;
                             next_state.set(GameRoundState::RoundEnd);
+                            
                         }
                         *interaction = Interaction::None;
                     }
