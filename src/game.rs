@@ -14,7 +14,7 @@ pub mod resources;
 use bevy::prelude::*;
 use components::Deck;
 use constants::{AppState, DeckState, GameRoundState};
-use in_game_systems::{chip_button_click_system, in_game_setup, player_button_system, print_all_dealer_cards, track_app_state, track_game_state};
+use in_game_systems::{chip_button_click_system, despawn_cards_and_reset, in_game_setup, player_button_system, print_all_dealer_cards, reset_game, track_app_state, track_game_state};
 use resources::{BalanceValue, BetValue, ParentNode};
 use setup::{ingame_screen_setup, reload_home_screen, start_setup};
 use start_game_systems::start_game;
@@ -73,11 +73,14 @@ pub fn run() {
         .add_systems(OnEnter(GameRoundState::RoundStart), track_game_state)
         .add_systems(OnEnter(GameRoundState::Betting), track_game_state)
 
-        //.add_systems(OnEnter(GameRoundState::Betting), in_game_setup)
+        .add_systems(OnEnter(GameRoundState::Betting), despawn_cards_and_reset)
+        .add_systems(OnEnter(GameRoundState::Betting), in_game_setup)
         
         // Track app states on entry
         .add_systems(OnEnter(AppState::Start), track_app_state)
         .add_systems(OnEnter(AppState::InGame), track_app_state)
+
+        .add_systems(OnEnter(AppState::Start), reset_game)
 
         // Clean-up on exit
         .add_systems(OnExit(AppState::InGame), reload_home_screen)

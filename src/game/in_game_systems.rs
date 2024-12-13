@@ -9,22 +9,22 @@ pub fn in_game_setup(
     dealer_hands: Query<&DealerHand>,
     ) {
     
-        let player_hand = match player_hands.get_single() {
-            Ok(player_hands) => &player_hands.0[0], // Assuming player hands exist
-            Err(_) => {
-                println!("No player hands found, aborting setup");
-                return;
-            }
-        };
-    
-        // Safely fetch dealer hand
-        let dealer_hand = match dealer_hands.get_single() {
-            Ok(dealer_hand) => dealer_hand,
-            Err(_) => {
-                println!("No dealer hands found, aborting setup");
-                return;
-            }
-        };
+    let player_hand = match player_hands.get_single() {
+        Ok(player_hands) => &player_hands.0[0], // Assuming player hands exist
+        Err(_) => {
+            println!("No player hands found, aborting setup");
+            return;
+        }
+    };
+
+    // Safely fetch dealer hand
+    let dealer_hand = match dealer_hands.get_single() {
+        Ok(dealer_hand) => dealer_hand,
+        Err(_) => {
+            println!("No dealer hands found, aborting setup");
+            return;
+        }
+    };
 
     let parent_entity = commands.spawn(NodeBundle {
         style: Style {
@@ -196,6 +196,22 @@ fn spawn_text_fields(parent: &mut ChildBuilder, assets: &Res<AssetServer>) {
     spawn_text(parent, &assets, Vec2::new(415.0, 15.0), "Dealer", 30.0, TextComponents::NotChanged);
     spawn_text(parent, &assets, Vec2::new(40.0, 200.0), "Please place a bet then hit deal", 30.0, TextComponents::Instruction);
 }
+
+pub fn spawn_result_text(
+    parent: &mut ChildBuilder,
+    assets: &Res<AssetServer>,
+    result: &str,
+) -> Entity {
+    spawn_text(
+        parent,
+        assets,
+        Vec2::new(10.0, 255.0), 
+        result,
+        50.0, 
+        TextComponents::ResultText, 
+    )
+}
+
 pub fn spawn_player_card(
     parent: &mut ChildBuilder,
     assets: &Res<AssetServer>,
@@ -306,6 +322,39 @@ fn spawn_cards(parent: &mut ChildBuilder, assets: &Res<AssetServer>, player_hand
     spawn_dealer_cards(parent, assets, dealer_hand);    
 }
 
+pub fn spawn_keep_playing_button(
+    parent: &mut ChildBuilder,
+    assets: &Res<AssetServer>,
+) {
+    parent.spawn(ButtonBundle {
+        style: Style {
+            width: Val::Px(90.0),
+            height: Val::Px(50.0),
+            position_type: PositionType::Absolute,
+            left: Val::Px(405.0),
+            top: Val::Px(350.0),
+            border: UiRect::all(Val::Px(5.0)),
+            justify_content: JustifyContent::Center,
+            align_items: AlignItems::Center,
+            margin: UiRect { left: Val::Px(10.0), bottom: Val::Px(10.0), ..default() },
+            ..default()
+        },
+        border_color: BorderColor(Color::BLACK),
+        background_color: BackgroundColor(Color::srgb(0.15, 0.15, 0.15)),
+        ..default()
+    })
+    .with_children(|parent| {
+        parent.spawn(TextBundle::from_section(
+            "Keep Playing",
+            TextStyle {
+                font: assets.load("fonts/FiraSans-SemiBold.ttf"),
+                font_size: 15.0,
+                color: Color::WHITE,
+            },
+        ));
+    })
+    .insert(PlayerButtonValues::KeepPlaying); 
+}
 
 pub fn print_all_dealer_cards(
     dealer_hand_query: Query<&DealerHand>,
@@ -407,14 +456,7 @@ pub fn player_button_system(
         Query<(&ChipButtonValue, &mut Visibility)>,
         Query<(&PlayerButtonValues, &mut Visibility)>, 
 
-    )>,
-    mut balance_value: ResMut<BalanceValue>,
-    mut bet_value: ResMut<BetValue>,  
-    mut commands: Commands,
-    mut dealer_hand_query: Query<&mut DealerHand>,
-    mut player_hands_query: Query<&mut PlayerHands>,
-    game_round_state: Res<State<GameRoundState>>,
-    
+    )>,    
 ) {
     let mut deal_button_pressed = false;
     let mut keep_playing_button_pressed = false;
@@ -425,10 +467,7 @@ pub fn player_button_system(
                 match *value {
                     PlayerButtonValues::Home => {
                         println!("Home");
-                        reset(&mut balance_value, &mut bet_value );
                         next_app_state.set(AppState::Start);
-                        next_state.set(GameRoundState::RoundStart);
-
                         *interaction = Interaction::None;
                         
                     },
@@ -448,15 +487,6 @@ pub fn player_button_system(
         }
     }
     if keep_playing_button_pressed {
-
-        // for mut dealer_hand in dealer_hand_query.iter_mut() {
-        //     dealer_hand.cards.clear();  
-        // }
-
-        // for mut player_hands in player_hands_query.iter_mut() {
-        //     player_hands.0.clear(); 
-        // }
-
         for (value, mut visibility) in param_set.p4().iter_mut() {
             match *value {
                 PlayerButtonValues::KeepPlaying => {
@@ -475,13 +505,10 @@ pub fn player_button_system(
             }
         }
 
-        //next_state.set(GameRoundState::Betting);
-
-
+        next_state.set(GameRoundState::Betting);
     }
 
     if deal_button_pressed {
-
         for (_, _, value,  mut visibility) in param_set.p0().iter_mut() {
             match *value {
                 PlayerButtonValues::Deal => {
@@ -516,37 +543,9 @@ pub fn player_button_system(
         }
         next_state.set(GameRoundState::PlayerHand);
     }
-
-    // if *game_round_state == GameRoundState::Betting {
-    //     for (_, mut visibility) in param_set.p1().iter_mut() {
-    //         *visibility = Visibility::Hidden; 
-    //     }
-
-    //     for (chip_value, mut visibility) in param_set.p3().iter_mut() {
-    //         match *chip_value {
-    //             ChipButtonValue::One | ChipButtonValue::Five | ChipButtonValue::Ten | ChipButtonValue::Fifty => {
-    //                 *visibility = Visibility::Visible;
-    //             }
-    //         }
-    //     }
-    // }
 }
 
-pub fn spawn_result_text(
-    parent: &mut ChildBuilder,
-    assets: &Res<AssetServer>,
-    result: &str,
-) -> Entity {
-    spawn_text(
-        parent,
-        assets,
-        Vec2::new(10.0, 255.0), 
-        result,
-        50.0, 
-        TextComponents::ResultText, 
-    )
-}
-
+// game state related functions below ------------------------------------
 pub fn track_game_state(game_state: Res<State<GameRoundState>>){
     let game_state_string = match game_state.get() {
         GameRoundState::RoundStart => "Round Start",
@@ -566,46 +565,66 @@ pub fn track_app_state(current_app_state: Res<State<AppState>>) {
     println!("Current app state: {app_state_string}");
 }
 
-pub fn reset(balance_value: &mut ResMut<BalanceValue>, bet_value: &mut ResMut<BetValue>) {
+pub fn reset_game(mut balance_value: ResMut<BalanceValue>, 
+    mut bet_value: ResMut<BetValue>,
+    mut next_state: ResMut<NextState<GameRoundState>>,
+    // mut dealer_hand_query: Query<&mut DealerHand>,
+    // mut player_hands_query: Query<&mut PlayerHands>,
+    // mut cards_query: Query<Entity, With<InGameCardAccess>> ,
+    // game_round_state: Res<State<GameRoundState>>,
+    // mut commands: Commands,
+    // mut next_app_state: ResMut<NextState<AppState>>,
+
+) {
     balance_value.value = 1000;  
     bet_value.value = 0;         
     println!("Player balance reset to 1000 and bet reset to 0");
+
+    next_state.set(GameRoundState::RoundStart);
+
+    // for mut dealer_hand in dealer_hand_query.iter_mut() {
+    //     dealer_hand.cards.clear();  
+    // }
+
+    // for mut player_hands in player_hands_query.iter_mut() {
+    //     player_hands.0.clear(); 
+    // }
+
+    // for card in cards_query.iter_mut() {
+    //     commands.entity(card).despawn()
+    // }
+
+
 }
 
-
-pub fn spawn_keep_playing_button(
-    parent: &mut ChildBuilder,
-    assets: &Res<AssetServer>,
+pub fn despawn_cards_and_reset(
+    mut commands: Commands,
+    cards_query: Query<Entity, With<InGameCardAccess>>,
+    // dealer_query: Query<Entity, With<InGameCardAccess>>,
+    // mut parent_node: ResMut<ParentNode>, 
+    // assets: Res<AssetServer>,
+    // mut player_hands: Query<&mut PlayerHands>,
+    // mut dealer_hands: Query<&mut DealerHand>,
+    
 ) {
-    parent.spawn(ButtonBundle {
-        style: Style {
-            width: Val::Px(90.0),
-            height: Val::Px(50.0),
-            position_type: PositionType::Absolute,
-            left: Val::Px(405.0),
-            top: Val::Px(350.0),
-            border: UiRect::all(Val::Px(5.0)),
-            justify_content: JustifyContent::Center,
-            align_items: AlignItems::Center,
-            margin: UiRect { left: Val::Px(10.0), bottom: Val::Px(10.0), ..default() },
-            ..default()
-        },
-        border_color: BorderColor(Color::BLACK),
-        background_color: BackgroundColor(Color::srgb(0.15, 0.15, 0.15)),
-        ..default()
-    })
-    .with_children(|parent| {
-        parent.spawn(TextBundle::from_section(
-            "Keep Playing",
-            TextStyle {
-                font: assets.load("fonts/FiraSans-SemiBold.ttf"),
-                font_size: 15.0,
-                color: Color::WHITE,
-            },
-        ));
-    })
-    .insert(PlayerButtonValues::KeepPlaying); 
+    // if let Some(mut player_hands) = player_hands.iter_mut().next() {
+    //     player_hands.0.clear(); 
+    // }
+
+    // if let Some(mut dealer_hands) = dealer_hands.iter_mut().next() {
+    //     dealer_hands.cards.clear(); 
+    // }
+
+    for entity in cards_query.iter() {
+        commands.entity(entity).despawn_recursive();
+    }
+
 }
+
+
+
+
+// function attempts to be deleted / cleaned / reused below --------------------
 
 
 // fn spawn_cards_for_new_round(

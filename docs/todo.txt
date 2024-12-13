@@ -4,19 +4,22 @@ TODO:
 
 PRIORITY:
 
-ALEC:
-- implement home button that wipes game and restarts and goes to home
-- maybe a text for how much you won/lost / update
+- implement determine win function and in cases other than bust, when round end happens, spawn keep playing button
+- figure out how and make a function to reset player and dealer hands so when in_game_setup is called after a round, you get new Cards
+- same ^ but for when home is clicked, call that function to reset the cards
 
-- figure out how to reset round
-- implement determine_win function
+ALEC:
+- implement home button that wipes game and restarts and goes to home - kinda done 
+
+- figure out how to reset round - kinda done
+- implement determine_win function - setup but failed to implement
 ---------------------------------------------------
 
-- refactor code to fit the state-driven architecture (see constants.rs: GameRoundState; game.rs; for references)
+- refactor code to fit the state-driven architecture (see constants.rs: GameRoundState; game.rs; for references) - started this
 
-- figure out how to go to betting state once round ends 
+- figure out how to go to betting state once round ends - kinda done 
 - figure out how to transition from round end - rund start 
-- updating balances and win determination
+
 
 Lower priority: 
 - maybe a restart button that just resets the game 
@@ -43,10 +46,10 @@ GENERAL:
 	- int Funds X
 	- play functions(check, hit, etc)
 
-
-
-
 completed:
+- updating balances [X]
+
+- maybe a text for how much you won/lost / update [X]
 
 - Setup Dealer 
 	- Vector<Cards[]> Decks X
