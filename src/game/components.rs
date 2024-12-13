@@ -189,6 +189,10 @@ pub struct PlayerName(pub String);
 #[derive(Component)]
 pub struct PlayerBalance(pub f64);
 
+pub trait Hand {
+    fn cards(&self) -> &Vec<Card>;
+}
+
 #[derive(Component)]
 pub struct PlayerHand{
     pub cards: Vec<Card>,

@@ -6,7 +6,7 @@ use crate::game::constants::{DeckState, NO_CARD_VALUE};
 use super::components::{Deck, InGameCardAccess};
 use super::constants::{GameRoundState, CARD_HORIZONTAL_SPACING, CARD_VERTICAL_SPACING, DEALER_CARDS_INITIAL_HORIZONTAL_POSITION, DEALER_CARDS_INITIAL_VERTICAL_POSITION};
 use super::in_game_systems::spawn_dealer_card;
-use super::resources::ParentNode;
+use super::resources::{BalanceValue, ParentNode};
 use super::traits::{Dealable, Shufflable};
 
 pub fn spawn_dealer(mut commands: Commands, mut deck: ResMut<Deck>){
@@ -144,12 +144,79 @@ pub fn play_dealer_hand(
             totals.1 += card_value2;
             //Maybe add a small delay here
         }
+
+        if determine_dealer_bust(&mut dealer_hand) {
+            println!("Dealer Bust: Player Wins!");
+            next_state.set(GameRoundState::RoundEnd);  
+            return; 
+        }
+
         next_state.set(GameRoundState::RoundEnd);
 
-        //This should Likely be put in another function
-        //i.e. determine_win or something
-        if totals.1 > 21 && totals.0 > 21 {
-            println!("Dealer Bust: Player Win!");
-        }
     }
+}
+
+pub fn determine_dealer_bust(dealer_hand: &mut DealerHand)-> bool{
+    let mut totals: (u8, u8) = (0,0);
+    for card in &dealer_hand.cards{
+        let (card_total1, card_total2) = card.value;
+        totals.0 += card_total1;
+        totals.1 += card_total2;
+    }
+    if totals.1 > 21 && totals.0 > 21 {
+        return true;
+    }
+    else{
+        return false;
+    }
+
+}
+
+pub fn determine_win() {
+
+    // Maybe replace bust function with this ?
+    
+    // Retrieve the player's hand
+    
+    // Retrieve the dealer's hand
+    
+    // Calculate hand totals for both player and dealer into player_total and dealer_total
+
+    /*
+        Determine the outcome of the round
+        
+        if player_total > 21 {
+            // Player busts, dealer wins
+            println!("Player busts! Dealer wins.");
+            adjust_balance(&mut player_balance, -bet_value.value);
+            next_state.set(GameRoundState::RoundEnd);
+        } else if dealer_total > 21 {
+            // Dealer busts, player wins
+            println!("Dealer busts! Player wins.");
+            adjust_balance(&mut player_balance, bet_value.value);
+            next_state.set(GameRoundState::RoundEnd);
+        } else {
+            // No one busted, compare totals
+            if player_total > dealer_total {
+                // Player wins
+                println!("Player wins!");
+                adjust_balance(&mut player_balance, bet_value.value);
+                next_state.set(GameRoundState::RoundEnd);
+            } else if dealer_total > player_total {
+                // Dealer wins
+                println!("Dealer wins!");
+                adjust_balance(&mut player_balance, -bet_value.value);
+                next_state.set(GameRoundState::RoundEnd);
+            } else {
+                // It's a tie (push)
+                println!("It's a tie! Push.");
+                next_state.set(GameRoundState::RoundEnd);
+            }
+        }
+     */
+    
+}
+
+fn adjust_balance(balance: &mut BalanceValue, amount: i32) {
+    balance.value += amount;
 }
