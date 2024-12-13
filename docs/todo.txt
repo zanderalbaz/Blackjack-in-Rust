@@ -5,6 +5,12 @@ TODO:
 PRIORITY:
 
 - implement determine win function and in cases other than bust, when round end happens, spawn keep playing button
+- documentation
+- comments
+- readme
+- unit test
+
+if it happens and we want...
 - figure out how and make a function to reset player and dealer hands so when in_game_setup is called after a round, you get new Cards
 - same ^ but for when home is clicked, call that function to reset the cards
 
