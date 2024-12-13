@@ -411,6 +411,9 @@ pub fn player_button_system(
     mut balance_value: ResMut<BalanceValue>,
     mut bet_value: ResMut<BetValue>,  
     mut commands: Commands,
+    mut dealer_hand_query: Query<&mut DealerHand>,
+    mut player_hands_query: Query<&mut PlayerHands>,
+    game_round_state: Res<State<GameRoundState>>,
     
 ) {
     let mut deal_button_pressed = false;
@@ -445,6 +448,15 @@ pub fn player_button_system(
         }
     }
     if keep_playing_button_pressed {
+
+        // for mut dealer_hand in dealer_hand_query.iter_mut() {
+        //     dealer_hand.cards.clear();  
+        // }
+
+        // for mut player_hands in player_hands_query.iter_mut() {
+        //     player_hands.0.clear(); 
+        // }
+
         for (value, mut visibility) in param_set.p4().iter_mut() {
             match *value {
                 PlayerButtonValues::KeepPlaying => {
@@ -463,7 +475,8 @@ pub fn player_button_system(
             }
         }
 
-        next_state.set(GameRoundState::Betting);
+        //next_state.set(GameRoundState::Betting);
+
 
     }
 
@@ -503,6 +516,20 @@ pub fn player_button_system(
         }
         next_state.set(GameRoundState::PlayerHand);
     }
+
+    // if *game_round_state == GameRoundState::Betting {
+    //     for (_, mut visibility) in param_set.p1().iter_mut() {
+    //         *visibility = Visibility::Hidden; 
+    //     }
+
+    //     for (chip_value, mut visibility) in param_set.p3().iter_mut() {
+    //         match *chip_value {
+    //             ChipButtonValue::One | ChipButtonValue::Five | ChipButtonValue::Ten | ChipButtonValue::Fifty => {
+    //                 *visibility = Visibility::Visible;
+    //             }
+    //         }
+    //     }
+    // }
 }
 
 pub fn spawn_result_text(
@@ -545,6 +572,7 @@ pub fn reset(balance_value: &mut ResMut<BalanceValue>, bet_value: &mut ResMut<Be
     println!("Player balance reset to 1000 and bet reset to 0");
 }
 
+
 pub fn spawn_keep_playing_button(
     parent: &mut ChildBuilder,
     assets: &Res<AssetServer>,
@@ -578,6 +606,17 @@ pub fn spawn_keep_playing_button(
     })
     .insert(PlayerButtonValues::KeepPlaying); 
 }
+
+
+// fn spawn_cards_for_new_round(
+//     parent: &mut ChildBuilder,
+//     assets: &Res<AssetServer>,
+//     player_hand: &PlayerHand,
+//     dealer_hand: &DealerHand
+// ) {
+//     spawn_player_cards(parent, assets, player_hand);
+//     spawn_dealer_cards(parent, assets, dealer_hand);
+// }
 
 
 // pub fn despawn_cards(

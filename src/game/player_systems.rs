@@ -105,7 +105,6 @@ pub fn hit_player_hand(
                                 spawn_keep_playing_button(parent, &assets);
                             });
 
-                            balance.value += -bet_amount.value;
                             bet_amount.value = 0;
                             next_state.set(GameRoundState::RoundEnd);
                             
