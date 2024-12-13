@@ -5,6 +5,7 @@ use crate::game::constants::{CARD_HORIZONTAL_SPACING, CARD_VERTICAL_SPACING, NO_
 use crate::game::in_game_systems::{spawn_player_card};
 use super::components::{DealerHand, Deck, Hand, TextComponents};
 use super::constants::GameRoundState;
+use super::in_game_systems::spawn_result_text;
 use super::resources::{BalanceValue, BetValue, ParentNode};
 use super::traits::{Dealable, Shufflable};
 
@@ -61,6 +62,8 @@ pub fn hit_player_hand(
     mut next_state: ResMut<NextState<GameRoundState>>,
     mut player_query: Query<(&mut PlayerHands, &mut PlayerBalance)>,
     mut hit_button_query: Query<(&Button, &mut Interaction, &PlayerButtonValues)>,
+    mut balance: ResMut<BalanceValue>,
+    mut bet_amount: ResMut<BetValue>
 ){    
     for (_, mut interaction, value) in hit_button_query.iter_mut(){
         match *interaction{
@@ -90,6 +93,18 @@ pub fn hit_player_hand(
                         });
                         let bust = determine_player_bust(player_hand);
                         if bust{
+
+                            commands.entity(parent_node.0).with_children(|parent|{
+                                let result = format!("You Lose ${}! (Bust)", bet_amount.value);
+                                spawn_result_text(
+                                    parent,
+                                    &assets,
+                                    &result
+                                );
+                            });
+
+                            balance.value += -bet_amount.value;
+                            bet_amount.value = 0;
                             next_state.set(GameRoundState::RoundEnd);
                         }
                         *interaction = Interaction::None;

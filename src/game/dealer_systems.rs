@@ -2,11 +2,12 @@ use bevy::prelude::*;
 use crate::game::components::{Decks, DealerHand, Card, PlayerHands};
 use crate::game::bundles::DealerBundle;
 use crate::game::constants::{DeckState, NO_CARD_VALUE};
+use crate::game::in_game_systems::spawn_result_text;
 
-use super::components::{Deck, InGameCardAccess};
+use super::components::{Deck, InGameCardAccess, PlayerBalance, PlayerHand};
 use super::constants::{GameRoundState, CARD_HORIZONTAL_SPACING, CARD_VERTICAL_SPACING, DEALER_CARDS_INITIAL_HORIZONTAL_POSITION, DEALER_CARDS_INITIAL_VERTICAL_POSITION};
 use super::in_game_systems::spawn_dealer_card;
-use super::resources::{BalanceValue, ParentNode};
+use super::resources::{BalanceValue, BetValue, ParentNode};
 use super::traits::{Dealable, Shufflable};
 
 pub fn spawn_dealer(mut commands: Commands, mut deck: ResMut<Deck>){
@@ -111,8 +112,12 @@ pub fn play_dealer_hand(
     assets: Res<AssetServer>, 
     parent_node: Res<ParentNode>,
     mut next_state: ResMut<NextState<GameRoundState>>,
-    mut query: Query<&mut DealerHand>
+    mut query: Query<&mut DealerHand>,
+    mut balance: ResMut<BalanceValue>,
+    mut bet_amount: ResMut<BetValue>
+
 ){
+    
     for mut dealer_hand in &mut query{
         let mut totals: (u8, u8) = (0,0);
     for card in &dealer_hand.cards{
@@ -142,11 +147,25 @@ pub fn play_dealer_hand(
             let (card_value1, card_value2) = card_to_insert.value;
             totals.0 += card_value1;
             totals.1 += card_value2;
+
             //Maybe add a small delay here
         }
 
         if determine_dealer_bust(&mut dealer_hand) {
             println!("Dealer Bust: Player Wins!");
+
+            commands.entity(parent_node.0).with_children(|parent|{
+                let result = format!("You Win ${}! (Dealer Bust)", bet_amount.value);
+                spawn_result_text(
+                    parent,
+                    &assets,
+                    &result
+                );
+            });
+
+            balance.value += bet_amount.value * 2;
+            bet_amount.value = 0;
+
             next_state.set(GameRoundState::RoundEnd);  
             return; 
         }
@@ -175,7 +194,7 @@ pub fn determine_dealer_bust(dealer_hand: &mut DealerHand)-> bool{
 pub fn determine_win() {
 
     // Maybe replace bust function with this ?
-    
+
     // Retrieve the player's hand
     
     // Retrieve the dealer's hand
@@ -217,6 +236,19 @@ pub fn determine_win() {
     
 }
 
-fn adjust_balance(balance: &mut BalanceValue, amount: i32) {
-    balance.value += amount;
-}
+
+// for player_hand in &mut player_query {
+//     let mut player_totals: (u8, u8) = (0,0);
+
+//     for card in &player_hand.cards {
+//         let (card_total1, card_total2) = card.value;
+//         player_totals.0 += card_total1;
+//         player_totals.1 += card_total2;
+
+//     }
+//     let player_total = player_totals.0 + player_totals.1;
+//     println!("{player_total}");
+// }
+
+// let dealer_total = totals.0 + totals.1;
+// println!("{dealer_total}");

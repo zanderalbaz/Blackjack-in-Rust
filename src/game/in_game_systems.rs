@@ -432,8 +432,6 @@ pub fn player_button_system(
                 }
                 _ => {}
             }
-
-            
         }
 
         for(chip_value, mut visibility) in param_set.p3().iter_mut() {
@@ -458,6 +456,21 @@ pub fn player_button_system(
         }
         next_state.set(GameRoundState::PlayerHand);
     }
+}
+
+pub fn spawn_result_text(
+    parent: &mut ChildBuilder,
+    assets: &Res<AssetServer>,
+    result: &str,
+) -> Entity {
+    spawn_text(
+        parent,
+        assets,
+        Vec2::new(10.0, 255.0), // Position of the result text on screen
+        result,
+        50.0, // Font size
+        TextComponents::NotChanged, // No specific text component for this
+    )
 }
 
 pub fn track_game_state(game_state: Res<State<GameRoundState>>){
