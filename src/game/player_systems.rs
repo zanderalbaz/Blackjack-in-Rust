@@ -5,7 +5,7 @@ use crate::game::constants::{CARD_HORIZONTAL_SPACING, CARD_VERTICAL_SPACING, NO_
 use crate::game::in_game_systems::{spawn_player_card};
 use super::components::{DealerHand, Deck, TextComponents};
 use super::constants::GameRoundState;
-use super::in_game_systems::{spawn_result_text};
+use super::in_game_systems::{spawn_keep_playing_button, spawn_result_text};
 use super::resources::{BalanceValue, BetValue, ParentNode};
 use super::traits::{Dealable, Shufflable};
 
@@ -101,6 +101,8 @@ pub fn hit_player_hand(
                                     &assets,
                                     &result
                                 );
+
+                                spawn_keep_playing_button(parent, &assets);
                             });
 
                             balance.value += -bet_amount.value;

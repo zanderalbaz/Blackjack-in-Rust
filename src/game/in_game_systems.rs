@@ -404,13 +404,17 @@ pub fn player_button_system(
         Query<(&Button, &mut Interaction, &PlayerButtonValues, &mut Visibility), With<Button>>,
         Query<(&InGameCardAccess, &mut Visibility)>,       
         Query<(&TextComponents, &mut Visibility)>,      
-        Query<(&ChipButtonValue, &mut Visibility)>  
+        Query<(&ChipButtonValue, &mut Visibility)>,
+        Query<(&PlayerButtonValues, &mut Visibility)>, 
+
     )>,
     mut balance_value: ResMut<BalanceValue>,
     mut bet_value: ResMut<BetValue>,  
     mut commands: Commands,
+    
 ) {
     let mut deal_button_pressed = false;
+    let mut keep_playing_button_pressed = false;
     
     for (_, mut interaction, value, _) in param_set.p0().iter_mut() {
         match *interaction {
@@ -429,11 +433,38 @@ pub fn player_button_system(
                         deal_button_pressed = true;
                         *interaction = Interaction::None;
                     },   
+                    PlayerButtonValues::KeepPlaying => {
+                        println!("Keep Playing Button Pressed");
+                        keep_playing_button_pressed = true;
+                        *interaction = Interaction::None;
+                    },
                     _ => {}
                 }
             }
             _ => {}
         }
+    }
+    if keep_playing_button_pressed {
+        for (value, mut visibility) in param_set.p4().iter_mut() {
+            match *value {
+                PlayerButtonValues::KeepPlaying => {
+                    *visibility = Visibility::Hidden;
+                }
+                _ => {}
+            }
+        }
+        
+        for (value, mut visibility) in param_set.p2().iter_mut() {
+            match *value {
+                TextComponents::ResultText => {
+                    *visibility = Visibility::Hidden;
+                }
+                _ => {}
+            }
+        }
+
+        next_state.set(GameRoundState::Betting);
+
     }
 
     if deal_button_pressed {
@@ -482,10 +513,10 @@ pub fn spawn_result_text(
     spawn_text(
         parent,
         assets,
-        Vec2::new(10.0, 255.0), // Position of the result text on screen
+        Vec2::new(10.0, 255.0), 
         result,
-        50.0, // Font size
-        TextComponents::NotChanged, // No specific text component for this
+        50.0, 
+        TextComponents::ResultText, 
     )
 }
 
@@ -513,6 +544,41 @@ pub fn reset(balance_value: &mut ResMut<BalanceValue>, bet_value: &mut ResMut<Be
     bet_value.value = 0;         
     println!("Player balance reset to 1000 and bet reset to 0");
 }
+
+pub fn spawn_keep_playing_button(
+    parent: &mut ChildBuilder,
+    assets: &Res<AssetServer>,
+) {
+    parent.spawn(ButtonBundle {
+        style: Style {
+            width: Val::Px(90.0),
+            height: Val::Px(50.0),
+            position_type: PositionType::Absolute,
+            left: Val::Px(405.0),
+            top: Val::Px(350.0),
+            border: UiRect::all(Val::Px(5.0)),
+            justify_content: JustifyContent::Center,
+            align_items: AlignItems::Center,
+            margin: UiRect { left: Val::Px(10.0), bottom: Val::Px(10.0), ..default() },
+            ..default()
+        },
+        border_color: BorderColor(Color::BLACK),
+        background_color: BackgroundColor(Color::srgb(0.15, 0.15, 0.15)),
+        ..default()
+    })
+    .with_children(|parent| {
+        parent.spawn(TextBundle::from_section(
+            "Keep Playing",
+            TextStyle {
+                font: assets.load("fonts/FiraSans-SemiBold.ttf"),
+                font_size: 15.0,
+                color: Color::WHITE,
+            },
+        ));
+    })
+    .insert(PlayerButtonValues::KeepPlaying); 
+}
+
 
 // pub fn despawn_cards(
 //     game_round_state: Res<State<GameRoundState>>,

@@ -45,6 +45,7 @@ pub enum PlayerButtonValues {
     DoubleDown,
     Home,
     Deal,
+    KeepPlaying,
 }
 
 #[derive(Component, Debug, Clone, Copy, PartialEq)]
@@ -59,6 +60,7 @@ pub enum TextComponents {
     Bet,
     Instruction,
     NotChanged,
+    ResultText,
 }
 // -----------------------------
 
