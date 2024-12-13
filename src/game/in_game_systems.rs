@@ -405,8 +405,7 @@ pub fn player_button_system(
                         println!("Home");
                         reset(&mut balance_value, &mut bet_value );
                         next_app_state.set(AppState::Start);
-                        //track_app_state(current_app_state);
-                        //println!("{}", AppState)
+                        next_state.set(GameRoundState::RoundStart);
 
                         *interaction = Interaction::None;
                         
