@@ -609,7 +609,6 @@ pub fn despawn_cards_and_reset(
 ) {
 
     // maybe an array instead of vector for player hand cards?
-    
 
     // if let Some(mut player_hands) = player_hands.iter_mut().next() {
     //     player_hands.0.clear(); 
