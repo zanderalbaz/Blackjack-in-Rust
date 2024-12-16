@@ -446,6 +446,8 @@ pub fn chip_button_click_system(
 
 //dealing with player game button clicks
 
+/// this is the player button system function
+
 pub fn player_button_system(
     mut next_state: ResMut<NextState<GameRoundState>>,
     mut next_app_state: ResMut<NextState<AppState>>,
@@ -593,8 +595,6 @@ pub fn reset_game(mut balance_value: ResMut<BalanceValue>,
     // for card in cards_query.iter_mut() {
     //     commands.entity(card).despawn()
     // }
-
-
 }
 
 pub fn despawn_cards_and_reset(
@@ -603,10 +603,14 @@ pub fn despawn_cards_and_reset(
     // dealer_query: Query<Entity, With<InGameCardAccess>>,
     // mut parent_node: ResMut<ParentNode>, 
     // assets: Res<AssetServer>,
-    // mut player_hands: Query<&mut PlayerHands>,
-    // mut dealer_hands: Query<&mut DealerHand>,
+    mut player_hands: Query<&mut PlayerHands>,
+    mut dealer_hands: Query<&mut DealerHand>,
     
 ) {
+
+    // maybe an array instead of vector for player hand cards?
+    
+
     // if let Some(mut player_hands) = player_hands.iter_mut().next() {
     //     player_hands.0.clear(); 
     // }
@@ -618,7 +622,6 @@ pub fn despawn_cards_and_reset(
     for entity in cards_query.iter() {
         commands.entity(entity).despawn_recursive();
     }
-
 }
 
 
