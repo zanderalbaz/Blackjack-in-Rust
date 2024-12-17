@@ -1,26 +1,27 @@
 TODO:
 
-(800 x 500)
-
 PRIORITY:
 
-- implement determine win function and in cases other than bust, when round end happens, spawn keep playing button
-- documentation
-- comments
-- readme
+1)
 - unit test
 
-if it happens and we want...
-- figure out how and make a function to reset player and dealer hands so when in_game_setup is called after a round, you get new Cards
-- same ^ but for when home is clicked, call that function to reset the cards
+2)
+- readme
 
-ALEC:
-- implement home button that wipes game and restarts and goes to home - kinda done 
+3)
+- Presentation
 
-- figure out how to reset round - kinda done
-- implement determine_win function - setup but failed to implement
----------------------------------------------------
+4) if we have time to try...
+- implement determine win function and in cases other than bust, when round end happens, spawn keep playing button
+- figure out how to wipe player hands so that when new round refresh happens, cards arent same as last round
 
+recently completed:
+
+- comments [X]
+- documentation [X]
+
+
+ ------------------------------------------------
 - refactor code to fit the state-driven architecture (see constants.rs: GameRoundState; game.rs; for references) - started this
 
 - figure out how to go to betting state once round ends - kinda done 
