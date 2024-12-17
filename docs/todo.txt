@@ -11,7 +11,10 @@ PRIORITY:
 3)
 - Presentation
 
-4) if we have time to try...
+4)
+- maybe look for places we unwrap and implement solid error checking - may not matter due to amount time spent on this project
+
+5) if we have time to try...
 - implement determine win function and in cases other than bust, when round end happens, spawn keep playing button
 - figure out how to wipe player hands so that when new round refresh happens, cards arent same as last round
 
