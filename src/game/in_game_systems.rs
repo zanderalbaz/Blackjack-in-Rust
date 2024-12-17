@@ -1,6 +1,12 @@
+///in game systems module is used and responsible for creation and handling of UI components such as the buttons, cards, text elements, etc
+
 use bevy::prelude::*;
 use super::{components::{Card, ChipButtonValue, DealerHand, InGameCardAccess, PlayerBalance, PlayerButtonValues, PlayerHand, PlayerHands, TextComponents}, constants::{AppState, GameRoundState, CARD_HORIZONTAL_SPACING, CARD_VERTICAL_SPACING, DEALER_CARDS_INITIAL_HORIZONTAL_POSITION, DEALER_CARDS_INITIAL_VERTICAL_POSITION, PLAYER_CARDS_INITIAL_HORIZONTAL_POSITION, PLAYER_CARDS_INITIAL_VERTICAL_POSITION}, player_systems::{double_down_player_hand, hit_player_hand, stand_player_hand}, resources::{BalanceValue, BetValue, ParentNode}};
 
+/// in_game_setup is the function used for setting up the base of our game once the start screen is bypassed.
+/// We use it to spawn the player and dealer hands, as well as spawn the parent entity that all of our UI 
+/// components are attached to. Finally, the buttons, chip buttons, text, and cards are spawned here with the help
+/// of helper functions.
 pub fn in_game_setup(
     mut commands: Commands,
     assets: Res<AssetServer>,
@@ -9,8 +15,9 @@ pub fn in_game_setup(
     dealer_hands: Query<&DealerHand>,
     ) {
     
+    // Safely fetch player hand
     let player_hand = match player_hands.get_single() {
-        Ok(player_hands) => &player_hands.0[0], // Assuming player hands exist
+        Ok(player_hands) => &player_hands.0[0],
         Err(_) => {
             println!("No player hands found, aborting setup");
             return;
@@ -26,6 +33,7 @@ pub fn in_game_setup(
         }
     };
 
+    // Spawn UI parent entity, all children will be built off of this
     let parent_entity = commands.spawn(NodeBundle {
         style: Style {
             width: Val::Percent(100.0),
@@ -36,6 +44,7 @@ pub fn in_game_setup(
     })
     .with_children(|parent| {
         
+        //spawn the componenets of the UI at once via their helper functions
         spawn_buttons(parent, &assets);
         
         spawn_chip_buttons(parent, &assets);
@@ -52,7 +61,10 @@ pub fn in_game_setup(
 
 //UI component functions below ----------------
 
-//spawning chip buttons dynamically
+
+/// spawn_image_button is the helper function we use to spawn the chip buttons (they use an image as the button background)
+/// We made this because there are a handful of chip buttons, and this allows us to dynamically spawn them with specific 
+/// parameters such as location and image to be attached, all without unnecessary repitition. 
 fn spawn_image_button(
     parent: &mut ChildBuilder,
     assets: &Res<AssetServer>,
@@ -61,6 +73,7 @@ fn spawn_image_button(
     value: ChipButtonValue,
 ) {
     parent.spawn(ButtonBundle {
+        //style components
         style: Style {
             width: Val::Px(90.0),
             height: Val::Px(90.0),
@@ -74,7 +87,9 @@ fn spawn_image_button(
         },
         ..default()
     })
+    //attach ChipButtonValue enum type here
     .insert(value)
+    //attach image to button
     .with_children(|parent| {
         parent.spawn(ImageBundle {
             style: Style {
@@ -92,7 +107,9 @@ fn spawn_image_button(
     });
 }
 
-//spawning text elements dynamically
+/// spawn_text is our text helper function that allows us to spawn various text elements with different parameters and values.
+/// This function and the other spawn functions all take in that original parent node that the UI is based upon, and build a child 
+/// element that is attached to the main UI parent node.
 fn spawn_text(
     parent: &mut ChildBuilder,
     assets: &Res<AssetServer>,
@@ -123,14 +140,18 @@ fn spawn_text(
         },
         ..default()
     })
+    //insert TextComponent enum type for the text to be altered later
     .insert(text_component)
     .id();
 
     entity
 }
 
-//spawning player game buttons dynamically
+
+/// spawn_buttons spawns our player system buttons such as stand, hit, double down, etc. Same as the other spawn functions, we use this 
+/// to dynamically spawn these buttons with unique values to avoid unnecessary repetition.
 fn spawn_buttons(parent: &mut ChildBuilder, assets: &Res<AssetServer>) {
+    //setup individual buttons to be passed through the builder
     let button_positions = vec![
         (Vec2::new(5.0, 350.0), "Stand", 30.0, PlayerButtonValues::Stand),
         (Vec2::new(105.0, 350.0), "Hit", 30.0, PlayerButtonValues::Hit),
@@ -139,6 +160,7 @@ fn spawn_buttons(parent: &mut ChildBuilder, assets: &Res<AssetServer>) {
         (Vec2::new(690.0, 10.0), "Home", 15.0, PlayerButtonValues::Home),
     ];
 
+    //build the buttons listed above ^
     for (position, label, font_size, button_value) in button_positions {
         let mut button_bundle = ButtonBundle {
             style: Style {
@@ -158,6 +180,7 @@ fn spawn_buttons(parent: &mut ChildBuilder, assets: &Res<AssetServer>) {
             ..default()
         };
 
+        //hiding and ensuring visibility for necessary buttons
         button_bundle.visibility = match button_value {
             PlayerButtonValues::Home => Visibility::Visible,
             _ => Visibility::Hidden,
@@ -178,7 +201,8 @@ fn spawn_buttons(parent: &mut ChildBuilder, assets: &Res<AssetServer>) {
     }
 }
 
-//spawning the chip buttons with specific values 
+
+///spawn_chip_buttons utilizes the spawn_image_button helper function and creates the chip buttons based on their unique values
 fn spawn_chip_buttons(parent: &mut ChildBuilder, assets: &Res<AssetServer>) {
     spawn_image_button(parent, &assets, Vec2::new(5.0, 400.0), "chips/1.png", ChipButtonValue::One);
     spawn_image_button(parent, &assets, Vec2::new(105.0, 400.0), "chips/5.png", ChipButtonValue::Five);
@@ -186,7 +210,7 @@ fn spawn_chip_buttons(parent: &mut ChildBuilder, assets: &Res<AssetServer>) {
     spawn_image_button(parent, &assets, Vec2::new(305.0, 400.0), "chips/50.png", ChipButtonValue::Fifty);
 }
 
-//spawning the text elements with specific values
+/// spawn_text_fields spawns all text elements for the UI, using the helper function with unique parameters per each text
 fn spawn_text_fields(parent: &mut ChildBuilder, assets: &Res<AssetServer>) {
     spawn_text(parent, &assets, Vec2::new(125.0, 305.0), "Bet Amount:", 30.0, TextComponents::NotChanged);
     spawn_text(parent, &assets, Vec2::new(270.0, 305.0), "x", 30.0, TextComponents::Bet);
@@ -197,6 +221,7 @@ fn spawn_text_fields(parent: &mut ChildBuilder, assets: &Res<AssetServer>) {
     spawn_text(parent, &assets, Vec2::new(40.0, 200.0), "Please place a bet then hit deal", 30.0, TextComponents::Instruction);
 }
 
+///spawn_result_text is uses to spawn win / loss statements once the round ends
 pub fn spawn_result_text(
     parent: &mut ChildBuilder,
     assets: &Res<AssetServer>,
@@ -212,6 +237,7 @@ pub fn spawn_result_text(
     )
 }
 
+///spawn_player_card is a helper function used for spawning the player cards on the player side of the screen
 pub fn spawn_player_card(
     parent: &mut ChildBuilder,
     assets: &Res<AssetServer>,
@@ -243,6 +269,7 @@ pub fn spawn_player_card(
     .insert(InGameCardAccess::PlayerCard(card_index));
 }
 
+///spawn_player_cards utilizes spawn_player_card to go through the players hand and spawn cards in the hand
 fn spawn_player_cards(parent: &mut ChildBuilder, assets: &Res<AssetServer>, player_hand: &PlayerHand) {
     for (i, card) in player_hand.cards.iter().enumerate() {
         spawn_player_card(
@@ -258,6 +285,7 @@ fn spawn_player_cards(parent: &mut ChildBuilder, assets: &Res<AssetServer>, play
     }
 }
 
+///spawn_dealer_card is a helper function used for spawning the dealer cards on the dealer side of the screen
 pub fn spawn_dealer_card(
     parent: &mut ChildBuilder, 
     assets: &Res<AssetServer>, 
@@ -266,7 +294,6 @@ pub fn spawn_dealer_card(
     card_position: Vec2,
     load_front_asset: bool,
     is_visible: bool){
-    // println!("running spawn_dealer_card for {} of {} with asset: {} at position: {}", card.face, card.suite, card.front_asset_path, card_index);
     parent.spawn(ImageBundle {
         style: Style {
             width: Val::Px(90.0),
@@ -287,6 +314,7 @@ pub fn spawn_dealer_card(
     .insert(InGameCardAccess::DealerCard(card_index));
 }
 
+///spawn_dealer_cards utilizes spawn_dealer_card to go through the dealers hand and spawn cards in the hand
 fn spawn_dealer_cards(parent: &mut ChildBuilder, assets: &Res<AssetServer>, dealer_hand: &DealerHand) {
     for (i, card) in dealer_hand.cards.iter().enumerate() {
             if i == 0 {
@@ -317,11 +345,13 @@ fn spawn_dealer_cards(parent: &mut ChildBuilder, assets: &Res<AssetServer>, deal
     }
 }
 
+///spawn_cards calls the spawn_player_cards and spawn_dealer_cards functions at once to spawn the appropriate cards in the appropriate places
 fn spawn_cards(parent: &mut ChildBuilder, assets: &Res<AssetServer>, player_hand: &PlayerHand, dealer_hand: &DealerHand) {
     spawn_player_cards(parent, assets, player_hand);
     spawn_dealer_cards(parent, assets, dealer_hand);    
 }
 
+///spawn_keep_playing_button is used to spawn a button that allows the user to reset the match and keep playing once a round ends
 pub fn spawn_keep_playing_button(
     parent: &mut ChildBuilder,
     assets: &Res<AssetServer>,
@@ -356,6 +386,7 @@ pub fn spawn_keep_playing_button(
     .insert(PlayerButtonValues::KeepPlaying); 
 }
 
+/// print_all_dealer_cards is a function available for testing to print the contents of the cards the dealer has in hand
 pub fn print_all_dealer_cards(
     dealer_hand_query: Query<&DealerHand>,
 ) {
@@ -369,7 +400,7 @@ pub fn print_all_dealer_cards(
 
 //button click functions below -----------------------
 
-//dealing with chip button clicks
+/// chip_button_click_system is used for handling chip button clicks, whether its adjusting the player balance or bet being placed
 pub fn chip_button_click_system(
     mut bet_value: ResMut<BetValue>,
     mut balance_value: ResMut<BalanceValue>,
@@ -378,6 +409,8 @@ pub fn chip_button_click_system(
     mut deal_button_query: Query<(&PlayerButtonValues, &mut Visibility), With<PlayerButtonValues>>,
 
 ) {
+
+    //begin interaction query , if certain chip interacted with, do something related to that chip value
     for (_, mut interaction, value) in interaction_query.iter_mut() {
         match *interaction {
             Interaction::Pressed => {
@@ -417,6 +450,7 @@ pub fn chip_button_click_system(
                 }
                 *interaction = Interaction::None;
 
+                //query to find the deal button and set it to be visible once chip button is clicked
                 for (button_value, mut visibility) in deal_button_query.iter_mut() {
                     if let PlayerButtonValues::Deal = *button_value {
                         *visibility = Visibility::Visible;
@@ -426,6 +460,7 @@ pub fn chip_button_click_system(
             _ => {}
         }
 
+        //below are a few lines that are used for updating the bet amount text and player balance text as chips are interacted with
         let new_bet_text = bet_value.value.to_string();
         let new_balance_text  = balance_value.value.to_string();
 
@@ -444,13 +479,12 @@ pub fn chip_button_click_system(
 
 }
 
-//dealing with player game button clicks
 
-/// this is the player button system function
-
+/// player_button_system is used to handle clicks on the player system buttons such as hit, stand, double down, etc.
 pub fn player_button_system(
     mut next_state: ResMut<NextState<GameRoundState>>,
     mut next_app_state: ResMut<NextState<AppState>>,
+    //param set created to allow us to avoid conflict while querying on visibility for multiple components 
     mut param_set: ParamSet<(
         Query<(&Button, &mut Interaction, &PlayerButtonValues, &mut Visibility), With<Button>>,
         Query<(&InGameCardAccess, &mut Visibility)>,       
@@ -463,6 +497,7 @@ pub fn player_button_system(
     let mut deal_button_pressed = false;
     let mut keep_playing_button_pressed = false;
     
+    //interaction query for the playerbutton values, do something in particular if certain button pressed...
     for (_, mut interaction, value, _) in param_set.p0().iter_mut() {
         match *interaction {
             Interaction::Pressed => {
@@ -488,7 +523,12 @@ pub fn player_button_system(
             _ => {}
         }
     }
+
+    //flags used to allow us to break logic for button press outside of the query for loop , as ownership and access is compromised 
+    //if used in the query for loop.
     if keep_playing_button_pressed {
+
+        //if keep playing button is pressed, we query for necessary components to be reset and visibility restored/revoked
         for (value, mut visibility) in param_set.p4().iter_mut() {
             match *value {
                 PlayerButtonValues::KeepPlaying => {
@@ -510,6 +550,7 @@ pub fn player_button_system(
         next_state.set(GameRoundState::Betting);
     }
 
+    //if deal button pressed, toggle necessary components visibility
     if deal_button_pressed {
         for (_, _, value,  mut visibility) in param_set.p0().iter_mut() {
             match *value {
@@ -548,6 +589,8 @@ pub fn player_button_system(
 }
 
 // game state related functions below ------------------------------------
+
+///track_game_state used for testing purposes / to track game state as certain actions and turns are finished / started
 pub fn track_game_state(game_state: Res<State<GameRoundState>>){
     let game_state_string = match game_state.get() {
         GameRoundState::RoundStart => "Round Start",
@@ -559,6 +602,7 @@ pub fn track_game_state(game_state: Res<State<GameRoundState>>){
     println!("Game State: {game_state_string}");
 }
 
+///track_app_state used for testing purposes / to track app state being in the start menu or ingame UI
 pub fn track_app_state(current_app_state: Res<State<AppState>>) {
     let app_state_string = match current_app_state.get(){
         AppState::Start => "Start",
@@ -567,6 +611,9 @@ pub fn track_app_state(current_app_state: Res<State<AppState>>) {
     println!("Current app state: {app_state_string}");
 }
 
+///reset_game is to be used for resetting values, hands, and UI components for when the user finishes a round and wants to play another.
+/// currently it is not fully functional, everything except for the previous player and dealer hands are being reset.
+/// attempted to reset player and dealer hands and did not find success, would love to give it a shot again when time allows.
 pub fn reset_game(mut balance_value: ResMut<BalanceValue>, 
     mut bet_value: ResMut<BetValue>,
     mut next_state: ResMut<NextState<GameRoundState>>,
@@ -597,6 +644,8 @@ pub fn reset_game(mut balance_value: ResMut<BalanceValue>,
     // }
 }
 
+/// despawn_cards_and_reset was another attempt to clear the player and dealer hands in between rounds.
+/// odd behavior when clearing the player and dealer hands in the commented out code below.
 pub fn despawn_cards_and_reset(
     mut commands: Commands,
     cards_query: Query<Entity, With<InGameCardAccess>>,
@@ -622,8 +671,6 @@ pub fn despawn_cards_and_reset(
         commands.entity(entity).despawn_recursive();
     }
 }
-
-
 
 
 // function attempts to be deleted / cleaned / reused below --------------------

@@ -1,15 +1,18 @@
+///dealer systems module is used to hold and implement all of the functionality for the dealer side of the game
+
 use bevy::prelude::*;
 use crate::game::components::{Decks, DealerHand, Card, PlayerHands};
 use crate::game::bundles::DealerBundle;
 use crate::game::constants::{DeckState, NO_CARD_VALUE};
 use crate::game::in_game_systems::spawn_result_text;
-
 use super::components::{Deck, InGameCardAccess, PlayerBalance, PlayerHand};
 use super::constants::{GameRoundState, CARD_HORIZONTAL_SPACING, CARD_VERTICAL_SPACING, DEALER_CARDS_INITIAL_HORIZONTAL_POSITION, DEALER_CARDS_INITIAL_VERTICAL_POSITION};
 use super::in_game_systems::spawn_dealer_card;
 use super::resources::{BalanceValue, BetValue, ParentNode};
 use super::traits::{Dealable, Shufflable};
 
+
+///spawn_dealer is used to spawn an instance of the dealer and initializing the hand for the dealer
 pub fn spawn_dealer(mut commands: Commands, mut deck: ResMut<Deck>){
     if deck.last_dealt_index == 0 {
         deck.shuffle();
@@ -33,50 +36,7 @@ pub fn spawn_dealer(mut commands: Commands, mut deck: ResMut<Deck>){
     });
 }
 
-pub fn spawn_test_dealer(mut commands: Commands, mut deck: ResMut<Deck>){
-    if deck.last_dealt_index == 0 {
-        deck.shuffle();
-    }
-
-    let dealer_card1 = deck.deal();
-    let dealer_card2 = deck.deal();
-
-    let dealer_hand = DealerHand {
-        cards: vec![dealer_card1.clone(), dealer_card2.clone()],
-    };
-
-    let dealer_decks = Decks {
-        number_of_decks: 2,
-        decks: vec![Deck::default(), Deck::default()], 
-    };
-
-    commands.spawn(DealerBundle {
-        dealer_hand,
-        dealer_decks,
-    });
-
-    println!("Dealer's hand: {} of {}, {} of {}", dealer_card1.face, dealer_card1.suite, dealer_card2.face, dealer_card2.suite);
-}
-
-pub fn test_dealer_decks(mut query: Query<&mut Decks>){
-    for deck in &mut query{
-        let num_decks = deck.number_of_decks;
-        println!("Number of Decks: {num_decks}");
-        let deck1 = &deck.decks[0];
-        for card in &deck1.cards{
-            println!("Card: {} of {}", card.face, card.suite);
-        }
-    }
-}
-
-pub fn test_dealer_hand(mut query: Query<&mut DealerHand>){
-    for dealer_hand in &mut query{
-        let card1 = &dealer_hand.cards[0];
-        let card2 = &dealer_hand.cards[1];
-        println!("Dealer Cards: {} of {}, {} of {}", card1.face, card1.suite, card2.face, card2.suite);
-    }
-}
-
+///shuffle_dealer_decks is used to randomize and shuffle decks associated with dealer
 pub fn shuffle_dealer_decks(mut query: Query<&mut Decks>,
     mut state: ResMut<State<DeckState>>,
     mut next_state: ResMut<NextState<DeckState>>){
@@ -87,6 +47,8 @@ pub fn shuffle_dealer_decks(mut query: Query<&mut Decks>,
     next_state.set(DeckState::Shuffled)
 }
 
+
+///reveal_dealer_hand holds the functionality for turning the dealer cards in game when certain conditions are met
 pub fn reveal_dealer_hand(
     mut dealer_card_image_query: Query<(&InGameCardAccess, &mut UiImage)>,
     dealer_hand_query: Query<&DealerHand>,
@@ -106,6 +68,7 @@ pub fn reveal_dealer_hand(
     }
 }
 
+/// play_dealer_hand is responsible for the logic related to how the dealer should play his hand based on certain conditions
 pub fn play_dealer_hand(
     mut commands: Commands,
     mut deck: ResMut<Deck>,
@@ -175,6 +138,8 @@ pub fn play_dealer_hand(
     }
 }
 
+
+/// determine_dealer_bust is a helper function to determine when the dealers hand is a bust
 pub fn determine_dealer_bust(dealer_hand: &mut DealerHand)-> bool{
     let mut totals: (u8, u8) = (0,0);
     for card in &dealer_hand.cards{
@@ -191,6 +156,56 @@ pub fn determine_dealer_bust(dealer_hand: &mut DealerHand)-> bool{
 
 }
 
+///spawn_test_dealer was and is used for command line testing , giving us a way to view and test the values associated with dealer
+pub fn spawn_test_dealer(mut commands: Commands, mut deck: ResMut<Deck>){
+    if deck.last_dealt_index == 0 {
+        deck.shuffle();
+    }
+
+    let dealer_card1 = deck.deal();
+    let dealer_card2 = deck.deal();
+
+    let dealer_hand = DealerHand {
+        cards: vec![dealer_card1.clone(), dealer_card2.clone()],
+    };
+
+    let dealer_decks = Decks {
+        number_of_decks: 2,
+        decks: vec![Deck::default(), Deck::default()], 
+    };
+
+    commands.spawn(DealerBundle {
+        dealer_hand,
+        dealer_decks,
+    });
+
+    println!("Dealer's hand: {} of {}, {} of {}", dealer_card1.face, dealer_card1.suite, dealer_card2.face, dealer_card2.suite);
+}
+
+///test_dealer_decks to test the ability for dealer to have or use multiple decks 
+pub fn test_dealer_decks(mut query: Query<&mut Decks>){
+    for deck in &mut query{
+        let num_decks = deck.number_of_decks;
+        println!("Number of Decks: {num_decks}");
+        let deck1 = &deck.decks[0];
+        for card in &deck1.cards{
+            println!("Card: {} of {}", card.face, card.suite);
+        }
+    }
+}
+
+///test_dealer_hand to run a command line test for a dealer's hand
+pub fn test_dealer_hand(mut query: Query<&mut DealerHand>){
+    for dealer_hand in &mut query{
+        let card1 = &dealer_hand.cards[0];
+        let card2 = &dealer_hand.cards[1];
+        println!("Dealer Cards: {} of {}, {} of {}", card1.face, card1.suite, card2.face, card2.suite);
+    }
+}
+
+///determine_win will be used to determine who wins when neither player busts.
+/// first time trying to implement it , it ended up being trickier than anticipated and I got stuck and couldn't get it to work.
+/// the logic is laid out for when we can attempt to finish this implementation.
 pub fn determine_win() {
 
     // Maybe replace bust function with this ?
@@ -235,20 +250,3 @@ pub fn determine_win() {
      */
     
 }
-
-
-// for player_hand in &mut player_query {
-//     let mut player_totals: (u8, u8) = (0,0);
-
-//     for card in &player_hand.cards {
-//         let (card_total1, card_total2) = card.value;
-//         player_totals.0 += card_total1;
-//         player_totals.1 += card_total2;
-
-//     }
-//     let player_total = player_totals.0 + player_totals.1;
-//     println!("{player_total}");
-// }
-
-// let dealer_total = totals.0 + totals.1;
-// println!("{dealer_total}");

@@ -1,3 +1,5 @@
+/// traits module for creation of custom traits
+
 use super::components::Card;
 
 pub trait Shufflable{

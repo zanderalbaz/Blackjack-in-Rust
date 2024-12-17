@@ -1,9 +1,10 @@
+///setup module used for building the start screen UI
 
 use bevy::prelude::*;
 use crate::game::components::{Background, Logo, PressEnterToPlay};
-
 use super::components::{ChipButtonValue, InGameCardAccess, PlayerButtonValues, TextComponents};
 
+/// start_setup spawns the camera for our 2d game as well as the home screen UI components via helper function spawn_home_assets
 pub fn start_setup(
     mut commands: Commands, 
     asset_server: Res<AssetServer>, 
@@ -13,6 +14,7 @@ pub fn start_setup(
         spawn_home_assets(commands, asset_server);
 }
 
+///ingame_screen_setup despawns home screen UI entities and sets up the background for the in game screen UI
 pub fn ingame_screen_setup(mut commands: Commands, 
     asset_server: Res<AssetServer>, 
     mut texture_atlas: ResMut<Assets<TextureAtlasLayout>>,
@@ -41,6 +43,8 @@ pub fn ingame_screen_setup(mut commands: Commands,
 
     }
 
+
+    ///reload_home_screen is used for removing in game UI entities and restoring the home UI components when state goes from InGame->Start
     pub fn reload_home_screen( mut commands: Commands, 
         asset_server: Res<AssetServer>, 
         mut in_game_query: ParamSet<(
@@ -68,6 +72,8 @@ pub fn ingame_screen_setup(mut commands: Commands,
 
     }
 
+    ///spawn_home_assets is a helper function used in the initial home setup and the reload home function.
+    /// this function spawns the appropriate sprite bundles for the home screen UI
     pub fn spawn_home_assets( mut commands: Commands, 
         asset_server: Res<AssetServer>,
 

@@ -1,5 +1,7 @@
+///game module is the central core of the game where resources, systems, states, and plugins are added.
+/// this is also responsible for running specific systems under certain conditions when certain actions occur.
+
 pub mod components;
-pub mod systems;
 pub mod player_systems;
 pub mod dealer_systems;
 pub mod plugins;

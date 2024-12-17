@@ -1,4 +1,8 @@
+/// plugins module used for initializing and implementing any plugins used for the game
+
 use bevy::prelude::*;
+
+///struct StartupPlugin sets up our window for the game to be held and displayed in
 pub struct StartupPlugin;
 
 impl Plugin for StartupPlugin{

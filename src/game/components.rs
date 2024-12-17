@@ -1,15 +1,21 @@
+///components module is used to hold all of our components / structs / enums that we utilize from other modules in the game
+
 use bevy::prelude::*;
 use rand::Rng;
 
 use crate::game::traits::{Shufflable, Dealable};
 
 // start screen ---------------
+
+///struct for background image
 #[derive(Component)]
 pub struct Background;
 
+///struct for logo
 #[derive(Component)]
 pub struct Logo;
 
+///struct for press enter to play text
 #[derive(Component)]
 pub struct PressEnterToPlay;
 
@@ -17,6 +23,7 @@ pub struct PressEnterToPlay;
 
 // in game screen ---------------
 
+///struct / component for accessing the bet amount text in game
 #[derive(Component)]
 pub struct BetAmountText {
     pub bet_text: String,
@@ -30,6 +37,7 @@ impl Default for BetAmountText {
     }
 }
 
+///enum / component used to access and uniquely identify chip buttons 
 #[derive(Component, Debug, Clone, Copy, PartialEq)]
 pub enum ChipButtonValue {
     One,
@@ -38,6 +46,7 @@ pub enum ChipButtonValue {
     Fifty,
 }
 
+/// enum / component used to access and uniquely identify specific player system buttons
 #[derive(Component, Debug, Clone, Copy, PartialEq)]
 pub enum PlayerButtonValues {
     Hit,
@@ -48,12 +57,14 @@ pub enum PlayerButtonValues {
     KeepPlaying,
 }
 
+///enum / component used to access the cards spawned in the screen in game
 #[derive(Component, Debug, Clone, Copy, PartialEq)]
 pub enum InGameCardAccess {
     DealerCard(usize),
     PlayerCard(usize),
 }
 
+/// enum / component used to access and uniquely identify text components in the in game UI
 #[derive(Component, Debug, Clone, Copy, PartialEq)]
 pub enum TextComponents {
     Balance,
@@ -66,6 +77,7 @@ pub enum TextComponents {
 
 // card / deck components --------------
 
+///struct / component used to create and access cards and maintain the data associated with each card
 #[derive(Component, Clone)]
 pub struct Card{
     pub suite: String,
@@ -76,12 +88,14 @@ pub struct Card{
     pub back_asset_path: String,
 }
 
+/// struct / resource used to access and utilize the deck in various parts of the game
 #[derive(Resource, Component, Clone)]
 pub struct Deck{
     pub cards: Vec<Card>,
     pub last_dealt_index: usize
 }
 
+//setting up ability for deck to be shuffled
 impl Shufflable for Deck {
     fn shuffle(&mut self){
         for i in 0..self.cards.len(){
@@ -95,6 +109,7 @@ impl Shufflable for Deck {
     }
 }
 
+//implementing ability to deal from the deck
 impl Dealable for Deck {
     fn deal(&mut self) -> Card{
         if self.last_dealt_index == 51 {
@@ -108,6 +123,7 @@ impl Dealable for Deck {
     }
 }
 
+//setting up default values for the cards in the deck
 impl Default for Deck {
     fn default() -> Self {
         let mut cards: Vec<Card> = Vec::new();
@@ -136,6 +152,7 @@ impl Default for Deck {
 
         for suite in &suites{
             for (face, value) in &face_values{
+                //dynamically adding the picture for each card 
                 let front_asset_path = format!("deck/{}_of_{}.png", face, suite);
                 cards.push(
                     Card{ 
@@ -155,6 +172,7 @@ impl Default for Deck {
     }
 }
 
+///struct / component to allow for multiple decks
 #[derive(Component)]
 pub struct Decks{
     pub number_of_decks: u8,
@@ -185,21 +203,26 @@ impl Default for Decks{
 
 // player / dealer components ------------
 
+///struct / component for the player name text object in UI
 #[derive(Component)]
 pub struct PlayerName(pub String);
 
+///struct / component for the player balance text object in UI
 #[derive(Component)]
 pub struct PlayerBalance(pub f64);
 
+///struct / component for the player hand, holds the current cards for player
 #[derive(Component)]
 pub struct PlayerHand{
     pub cards: Vec<Card>,
     pub bet: u64
 }
 
+///struct / component for multiple player hands 
 #[derive(Component)]
 pub struct PlayerHands(pub Vec<PlayerHand>);
 
+///struct / component for the dealer hand, holds the current cards for dealer
 #[derive(Component)]
 pub struct DealerHand{
     pub cards: Vec<Card>

@@ -1,3 +1,5 @@
+///player_systems module holds and implements the logic and functionality for the player
+
 use bevy::prelude::*;
 use crate::game::components::{PlayerButtonValues, Card, PlayerBalance, PlayerHand, PlayerHands, PlayerName};
 use crate::game::bundles::PlayerBundle;
@@ -9,6 +11,7 @@ use super::in_game_systems::{spawn_keep_playing_button, spawn_result_text};
 use super::resources::{BalanceValue, BetValue, ParentNode};
 use super::traits::{Dealable, Shufflable};
 
+///initial_shuffle ensures the deck is shuffled before dealing
 pub fn initial_shuffle(mut deck: ResMut<Deck>) {
     if deck.cards.is_empty() {
         *deck = Deck::default();
@@ -16,25 +19,7 @@ pub fn initial_shuffle(mut deck: ResMut<Deck>) {
     }
 }
 
-pub fn spawn_test_player(mut commands: Commands, mut deck: ResMut<Deck>){
-
-    if deck.last_dealt_index == 0 {
-        deck.shuffle(); 
-    }
-
-    let card1 = deck.deal();
-    let card2 = deck.deal();
-
-    commands.spawn(PlayerBundle{
-        player_name: PlayerName(String::from("test").into()),
-        player_balance: PlayerBalance(100.),
-        player_hands: PlayerHands(vec![PlayerHand{
-            bet: 100,
-            cards: vec![card1, card2], 
-        }]),
-    });
-}
-
+///spawn_player deals the player a hand and sets up the player to begin the round.
 pub fn spawn_player(mut commands: Commands, mut deck: ResMut<Deck>, balance: ResMut<BalanceValue>){
     if deck.last_dealt_index == 0 {
         deck.shuffle(); 
@@ -53,7 +38,7 @@ pub fn spawn_player(mut commands: Commands, mut deck: ResMut<Deck>, balance: Res
     });
 }
 
-
+///hit_player_hand implements the logic for when the hit button is pressed by the player
 pub fn hit_player_hand( 
     mut commands: Commands,
     mut deck: ResMut<Deck>,
@@ -120,6 +105,7 @@ pub fn hit_player_hand(
 
 }
 
+///stand_player_hand is used to implement the logic for when the player presses the stand button.
 pub fn stand_player_hand(
     mut next_state: ResMut<NextState<GameRoundState>>,
     mut stand_button_query: Query<(&Button, &mut Interaction, &PlayerButtonValues)>,
@@ -141,6 +127,7 @@ pub fn stand_player_hand(
     }    
 }
 
+///double_down_player_hand is responsible for implementing the logic associated with when the player presses double down.
 pub fn double_down_player_hand(
     mut commands: Commands,
     mut bet_value: ResMut<BetValue>,
@@ -227,23 +214,7 @@ pub fn double_down_player_hand(
         //notify player insufficient balance to double down
 }
 
-pub fn test_player_hand(mut query: Query<&mut PlayerHands>){
-    for player_hand in &mut query{
-        let bet = player_hand.0[0].bet;
-        let card1 = &player_hand.0[0].cards[0];
-        let card2 = &player_hand.0[0].cards[1];
-        println!("Bet of {} for cards: {} of {}, {} of {}", bet, card1.face, card1.suite, card2.face, card2.suite);
-    }
-}
-
-pub fn test_player_balance_change(mut query: Query<&mut PlayerBalance>){
-    for mut balance in &mut query{
-        println!("Player has balance of {}", balance.0);
-        balance.0 += 1.;
-        println!("Player has updated balance of {}", balance.0);
-    }
-}
-
+///determine_player_bust is used for implementing the logic when a player's hand is a bust.
 pub fn determine_player_bust(player_hand: &mut PlayerHand)-> bool{
     let mut totals: (u8, u8) = (0,0);
     for card in &player_hand.cards{
@@ -257,5 +228,43 @@ pub fn determine_player_bust(player_hand: &mut PlayerHand)-> bool{
     else{
         return false;
     }
+}
 
+///spawn_test_player is used to run a test player in the command line to monitor the values associated with a player
+pub fn spawn_test_player(mut commands: Commands, mut deck: ResMut<Deck>){
+
+    if deck.last_dealt_index == 0 {
+        deck.shuffle(); 
+    }
+
+    let card1 = deck.deal();
+    let card2 = deck.deal();
+
+    commands.spawn(PlayerBundle{
+        player_name: PlayerName(String::from("test").into()),
+        player_balance: PlayerBalance(100.),
+        player_hands: PlayerHands(vec![PlayerHand{
+            bet: 100,
+            cards: vec![card1, card2], 
+        }]),
+    });
+}
+
+///test_player_hand is used for testing and monitoring the values of a player's hand in the command line
+pub fn test_player_hand(mut query: Query<&mut PlayerHands>){
+    for player_hand in &mut query{
+        let bet = player_hand.0[0].bet;
+        let card1 = &player_hand.0[0].cards[0];
+        let card2 = &player_hand.0[0].cards[1];
+        println!("Bet of {} for cards: {} of {}, {} of {}", bet, card1.face, card1.suite, card2.face, card2.suite);
+    }
+}
+
+///test_player_balance_change is used for testing and monitoring the player's balance when a change is supposed to occur.
+pub fn test_player_balance_change(mut query: Query<&mut PlayerBalance>){
+    for mut balance in &mut query{
+        println!("Player has balance of {}", balance.0);
+        balance.0 += 1.;
+        println!("Player has updated balance of {}", balance.0);
+    }
 }
