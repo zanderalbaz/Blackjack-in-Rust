@@ -47,7 +47,6 @@ pub fn hit_player_hand(
     mut next_state: ResMut<NextState<GameRoundState>>,
     mut player_query: Query<(&mut PlayerHands, &mut PlayerBalance)>,
     mut hit_button_query: Query<(&Button, &mut Interaction, &PlayerButtonValues)>,
-    mut balance: ResMut<BalanceValue>,
     mut bet_amount: ResMut<BetValue>
 ){    
     for (_, mut interaction, value) in hit_button_query.iter_mut(){
