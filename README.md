@@ -1,5 +1,4 @@
 # Blackjack-in-Rust
-o Contributors & Licensing: Mention contributors and specify the license.
 
 ## Project Overview:
 
