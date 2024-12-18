@@ -1,7 +1,11 @@
-use bevy::prelude::*;
-pub struct SetupPlugin;
+/// plugins module used for initializing and implementing any plugins used for the game
 
-impl Plugin for SetupPlugin{
+use bevy::prelude::*;
+
+///struct StartupPlugin sets up our window for the game to be held and displayed in
+pub struct StartupPlugin;
+
+impl Plugin for StartupPlugin{
     fn build(&self, app: &mut App) {
         app.add_plugins(DefaultPlugins.set(WindowPlugin{
             primary_window: Some(Window{
@@ -15,3 +19,4 @@ impl Plugin for SetupPlugin{
         println!("build setup function ran!");
     }
 }
+

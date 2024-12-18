@@ -1,49 +1,98 @@
 TODO:
 
-(800 x 500)
-
 PRIORITY:
-- Setup player, dealer, deck, and card modules
-- Functionality and visuals to go from start->setup->ingame
+
+1)
+- unit test
+
+2)
+- readme
+
+3)
+- Presentation
+
+4)
+- maybe look for places we unwrap and implement solid error checking - may not matter due to amount time spent on this project
+
+5) if we have time to try...
+- implement determine win function and in cases other than bust, when round end happens, spawn keep playing button
+- figure out how to wipe player hands so that when new round refresh happens, cards arent same as last round
+
+recently completed:
+
+- comments [X]
+- documentation [X]
 
 
+ ------------------------------------------------
+- refactor code to fit the state-driven architecture (see constants.rs: GameRoundState; game.rs; for references) - started this
 
+- figure out how to go to betting state once round ends - kinda done 
+- figure out how to transition from round end - rund start 
+
+
+Lower priority: 
+- maybe a restart button that just resets the game 
+- maybe a minus or undo button to subtract from bet amount or something similar 
+- add a delay for each card when playing out the dealer hand
+
+
+tests for button clicks, game state for different actions, if you bust, test we go to round end
+deal test to go to playing
+
+unit tests....
+test 
+
+write one for a system using logic on entities 
+test something really small using only one entity
+
+ 
 GENERAL:
 
-- Setup Player
-	- int ID
-	- string Username
-	- Vector Hands
-	- int Funds
+- Setup Player 
+	- int ID  << do not need X
+	- string Username X
+	- Vector Hands X
+	- int Funds X
 	- play functions(check, hit, etc)
 
-- Setup Dealer
-	- Vector<Cards[]> Decks
-	- functions (shuffle, hit/stand)
+completed:
+- updating balances [X]
 
-- Setup Deck
-	- Vector<Card> Cards
-	- Shuffable/dealable traits
+- maybe a text for how much you won/lost / update [X]
 
-- Setup Card
-	- string Suite
-	- string Face
-	- int Value
-	- back/front asset
+- Setup Dealer 
+	- Vector<Cards[]> Decks X
+	- functions (shuffle, hit) X 
 
-	-setup aces
+[X] logic to make it so that one dealer card is down and one shown until the right time 
+[X] start to implement dealer and player logic functions (hit, stand, doouble down)
+[X] when hit is called spawn a third card and shift positions
+[X] error check deal button so that when bet placed == 0 , prompts you to make bet of at least 1
 
-- Setup Game Logic
+- when hand is spawned for player, need to somehow connect those image_paths [X]
+- update value of bet [X]
+- Setup player [X], dealer[X], deck[X], and card[X] modules
+- Functionality and visuals to go from start->ingame [X]
 
-- Startup screen
-	- display background and title and space bar prompt
-	- press space to switch us to setup game screen
+- Startup screen X
+	- display background and title and space bar prompt x
+	- press enter to switch us to setup game screen x
 
-- Setup screen
-	- display fields
-	- play button that brings us to in game screen
+- In Game screen X
+	- display fields and views x
+	- display visuals and buttons x
 
-- In Game screen
-	- display fields and views
+- Setup Deck X
+	- Vector<Card> Cards X
+	- Shuffable/dealable traits x
+
+- Setup Card X
+	- string Suite X
+	- string Face X
+	- int Value X
+	- back/front asset X
+
+	-setup aces X
 
 
