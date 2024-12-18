@@ -15,11 +15,11 @@ We wanted to learn more about game development, so we decided to create a simple
 
 ## Usage Examples:
 
-+ Follow setup instructions 1 through 5 and play a satisfying game of Blackjack whenever you feel bored!
-    + You could play at home, or in the car, or at the beach (not recommended), or anytime anywhere, so long as you have your computer!
++ Follow setup instructions 3 through 5 and play a satisfying game of Blackjack whenever you feel bored!
+    + You could play at home, or in the car, or at the beach (not recommended), or anytime, anywhere, so long as you have your computer!
 
 ## Contributors & Licensing:
 
-This project was developed collaboratively by (Alec Zamora)[https://github.com/azamora96] and (Zander Alba)[https://github.com/zanderalbaz].
+This project was developed collaboratively by [Alec Zamora](https://github.com/azamora96) and [Zander Alba](https://github.com/zanderalbaz).
 
-This project is open source and is distributed under the (MIT License)[https://mit-license.org]. 
+This project is open source and is distributed under the [MIT License](https://mit-license.org). 
