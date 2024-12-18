@@ -7,9 +7,12 @@ use crate::game::constants::{DeckState, NO_CARD_VALUE};
 use crate::game::in_game_systems::spawn_result_text;
 use super::components::{Deck, InGameCardAccess, PlayerBalance, PlayerHand};
 use super::constants::{GameRoundState, CARD_HORIZONTAL_SPACING, CARD_VERTICAL_SPACING, DEALER_CARDS_INITIAL_HORIZONTAL_POSITION, DEALER_CARDS_INITIAL_VERTICAL_POSITION};
-use super::in_game_systems::spawn_dealer_card;
+use super::in_game_systems::{spawn_dealer_card, spawn_keep_playing_button};
+use super::player_systems::determine_player_bust;
 use super::resources::{BalanceValue, BetValue, ParentNode};
 use super::traits::{Dealable, Shufflable};
+use std::cmp;
+
 
 
 ///spawn_dealer is used to spawn an instance of the dealer and initializing the hand for the dealer
@@ -89,7 +92,7 @@ pub fn play_dealer_hand(
         totals.1 += card_total2;
     }
         //Hit on soft 17
-        while totals.0 < 17 || totals.1 < 18 {
+        while totals.0 < 17 || totals.1 <= 17 {
             let insert_index = dealer_hand.cards.len();
             let card_to_insert = deck.deal();
             dealer_hand.cards.push(card_to_insert.clone());
@@ -206,7 +209,72 @@ pub fn test_dealer_hand(mut query: Query<&mut DealerHand>){
 ///determine_win will be used to determine who wins when neither player busts.
 /// first time trying to implement it , it ended up being trickier than anticipated and I got stuck and couldn't get it to work.
 /// the logic is laid out for when we can attempt to finish this implementation.
-pub fn determine_win() {
+pub fn determine_win(
+    mut commands: Commands,
+    assets: Res<AssetServer>,
+    parent_node: Res<ParentNode>,
+    mut bet_amount: ResMut<BetValue>,
+    mut player_query: Query<(&mut PlayerHands, &mut PlayerBalance)>,
+    mut dealer_query: Query<&mut DealerHand>,
+
+
+) {
+    let mut player_win = false;
+    let (mut player_hands, _) = player_query.single_mut(); 
+    let player_hand = &mut player_hands.0[0];
+
+    player_win = !determine_player_bust(player_hand);
+
+    let mut dealer_hand = dealer_query.single_mut();
+    if (player_win == true){
+        player_win = determine_dealer_bust(&mut dealer_hand);
+    }
+    if player_win == false{
+        let mut player_totals: (u8, u8) = (0,0);
+        for card in &player_hand.cards{
+            let (card_total1, card_total2) = card.value;
+            player_totals.0 += card_total1;
+            player_totals.1 += card_total2;
+        }
+        let mut dealer_totals: (u8, u8) = (0,0);
+        for card in &dealer_hand.cards{
+            let (card_total1, card_total2) = card.value;
+            dealer_totals.0 += card_total1;
+            dealer_totals.1 += card_total2;
+        }
+        let player_total = cmp::max(player_totals.0, player_totals.1);
+        let dealer_total = cmp::max(dealer_totals.0, dealer_totals.1);
+        player_win = player_total > dealer_total;
+    }
+
+    if(player_win == false){
+        commands.entity(parent_node.0).with_children(|parent|{
+            let result = format!("You Lose ${}!", bet_amount.value);
+            spawn_result_text(
+                parent,
+                &assets,
+                &result
+            );
+
+            spawn_keep_playing_button(parent, &assets);
+        });
+
+        bet_amount.value = 0;
+    }
+    else{
+        commands.entity(parent_node.0).with_children(|parent|{
+            let result = format!("You Win ${}!", bet_amount.value);
+            spawn_result_text(
+                parent,
+                &assets,
+                &result
+            );
+
+            spawn_keep_playing_button(parent, &assets);
+        });
+
+        bet_amount.value = 0;
+    }
 
     // Maybe replace bust function with this ?
 
