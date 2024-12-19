@@ -1,7 +1,7 @@
 ///in game systems module is used and responsible for creation and handling of UI components such as the buttons, cards, text elements, etc
 
 use bevy::prelude::*;
-use super::{components::{Card, ChipButtonValue, DealerHand, Deck, InGameCardAccess, PlayerBalance, PlayerButtonValues, PlayerHand, PlayerHands, TextComponents}, constants::{AppState, GameRoundState, CARD_HORIZONTAL_SPACING, CARD_VERTICAL_SPACING, DEALER_CARDS_INITIAL_HORIZONTAL_POSITION, DEALER_CARDS_INITIAL_VERTICAL_POSITION, PLAYER_CARDS_INITIAL_HORIZONTAL_POSITION, PLAYER_CARDS_INITIAL_VERTICAL_POSITION}, player_systems::{double_down_player_hand, hit_player_hand, stand_player_hand}, resources::{BalanceValue, BetValue, ParentNode}, traits::Dealable};
+use super::{components::{Card, ChipButtonValue, DealerHand, InGameCardAccess, PlayerBalance, PlayerButtonValues, PlayerHand, PlayerHands, TextComponents}, constants::{AppState, GameRoundState, CARD_HORIZONTAL_SPACING, CARD_VERTICAL_SPACING, DEALER_CARDS_INITIAL_HORIZONTAL_POSITION, DEALER_CARDS_INITIAL_VERTICAL_POSITION, PLAYER_CARDS_INITIAL_HORIZONTAL_POSITION, PLAYER_CARDS_INITIAL_VERTICAL_POSITION}, player_systems::{double_down_player_hand, hit_player_hand, stand_player_hand}, resources::{BalanceValue, BetValue, ParentNode}};
 
 /// in_game_setup is the function used for setting up the base of our game once the start screen is bypassed.
 /// We use it to spawn the player and dealer hands, as well as spawn the parent entity that all of our UI 
@@ -648,25 +648,17 @@ pub fn reset_game(mut balance_value: ResMut<BalanceValue>,
 /// odd behavior when clearing the player and dealer hands in the commented out code below.
 pub fn despawn_cards_and_reset(
     mut commands: Commands,
-    mut player_query: Query<(&mut PlayerHands, &mut PlayerBalance)>,
-    mut deck: ResMut<Deck>,
-    assets: Res<AssetServer>,
     cards_query: Query<Entity, With<InGameCardAccess>>,
     // dealer_query: Query<Entity, With<InGameCardAccess>>,
-    mut parent_node: ResMut<ParentNode>, 
+    // mut parent_node: ResMut<ParentNode>, 
     // assets: Res<AssetServer>,
     mut player_hands: Query<&mut PlayerHands>,
     mut dealer_hands: Query<&mut DealerHand>,
     
 ) {
 
-    // // maybe an array instead of vector for player hand cards?
+    // maybe an array instead of vector for player hand cards?
 
-
-    // for entity in cards_query.iter() {
-    //     // commands.entity(parent_node.0).remove_children(&[entity]);
-    //     commands.entity(entity).despawn_recursive();
-    // }
     // if let Some(mut player_hands) = player_hands.iter_mut().next() {
     //     player_hands.0.clear(); 
     // }
@@ -675,28 +667,9 @@ pub fn despawn_cards_and_reset(
     //     dealer_hands.cards.clear(); 
     // }
 
-    // let (mut player_hands, _) = player_query.single_mut(); 
-    // let player_hand = &mut player_hands.0[0];
-    // let insert_index = player_hand.cards.len();
-    // let card_to_insert = deck.deal();
-    // player_hand.cards.push(card_to_insert.clone());
-    // let position = Vec2 {
-    //     x: PLAYER_CARDS_INITIAL_HORIZONTAL_POSITION + (insert_index as f32)*CARD_HORIZONTAL_SPACING,
-    //     y: PLAYER_CARDS_INITIAL_VERTICAL_POSITION  + (insert_index as f32)*CARD_VERTICAL_SPACING};
-    
-    
-    // commands.entity(parent_node.0).with_children(|parent|{
-    //     spawn_player_card(
-    //         parent,
-    //         &assets, 
-    //         &card_to_insert, 
-    //         insert_index, 
-    //         position,
-    //         true,
-    //     );
-    // });
-
-
+    for entity in cards_query.iter() {
+        commands.entity(entity).despawn_recursive();
+    }
 }
 
 

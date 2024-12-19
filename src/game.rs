@@ -23,7 +23,7 @@ use start_game_systems::start_game;
 use plugins::StartupPlugin;
 
 use player_systems::{hit_player_hand, stand_player_hand, double_down_player_hand, initial_shuffle, spawn_player, spawn_test_player};
-use dealer_systems::{determine_win, play_dealer_hand, reveal_dealer_hand, shuffle_dealer_decks, spawn_dealer, spawn_test_dealer};
+use dealer_systems::{play_dealer_hand, reveal_dealer_hand, shuffle_dealer_decks, spawn_dealer, spawn_test_dealer};
 
 #[derive(SystemSet, Debug, Hash, PartialEq, Eq, Clone)]
 pub struct StartGameSystemSet;
@@ -75,7 +75,7 @@ pub fn run() {
         .add_systems(OnEnter(GameRoundState::RoundStart), track_game_state)
         .add_systems(OnEnter(GameRoundState::Betting), track_game_state)
 
-        // .add_systems(OnEnter(GameRoundState::Betting), despawn_cards_and_reset)
+        .add_systems(OnEnter(GameRoundState::Betting), despawn_cards_and_reset)
         .add_systems(OnEnter(GameRoundState::Betting), in_game_setup)
         
         // Track app states on entry
@@ -83,7 +83,6 @@ pub fn run() {
         .add_systems(OnEnter(AppState::InGame), track_app_state)
 
         .add_systems(OnEnter(AppState::Start), reset_game)
-        .add_systems(OnEnter(GameRoundState::RoundEnd), determine_win)
 
         // Clean-up on exit
         .add_systems(OnExit(AppState::InGame), reload_home_screen)
